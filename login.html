@@ -1,326 +1,159 @@
-*{
-    margin: 0px;
-    font-family: Arial;
-    border:border-box;
-    background-color: black;
-    /* box-sizing: border-box; */
-
-}
-
-
-.navbar {
-    height: 70px;
-    background-color: #212323;
-    color: rgb(238, 241, 243);
-    display: flex;
-    align-items: center;
-    gap:2px;
-    justify-content: space-evenly;
-    padding: 20px;
-    margin-right: 0%;
-    width: 100%;
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Music Login</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
   
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: Arial, sans-serif;
+    }
 
+    body {
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: #151515;
+      /* background: linear-gradient(270deg, #000000, #2d2d4a, #1a1a40);
+      background-size: 600% 600%;
+      animation: gradientBG 10s ease infinite; */
+      color: white;
+    }
 
-}
+  
+    .container {
+      background: #151515;
+      border-radius: 15px;
+      padding: 40px;
+      width: 500px;
+      height: 450px;
+      box-shadow: 0px 0px 20px #9292d6;
+      text-align: center;
+    }
 
-.nav-logo {
-    border: 50%;
-    
-   
+    #login-heading {
+      color: #9292d6;
+      font-size: 3rem;
+      font-weight: 600;
+      margin-bottom: 30px;
+    }
 
-}
+    .input-box {
+      position: relative;
+      margin-bottom: 20px;
+    }
 
+    .input-box input {
+      width: 100%;
+      padding: 12px 40px 12px 15px;
+      border-radius: 8px;
+      border: 1px solid #9292d6;
+      background: transparent;
+      color: white;
+      font-size: 14px;
+      outline: none;
+      transition: 0.3s;
+    }
 
-.border{
-    /* border: 2px solid rgb(69, 69, 69); */
-    background-color: #212323;
-    /* font-size: 1.8rem; */
-}
-.border:hover{
-    cursor: pointer;
-    border-bottom: 2px solid white;
-}
+    .input-box input:focus {
+      border-color: aquamarine;
+      box-shadow: 0px 0px 8px aquamarine;
+    }
 
-.home{
-    border-radius: 50%;
-    height: 40px;
-    width: 40px;
-    font-size: 1.8rem;
-    padding: 10px;
-    background-color: #151515;
-    display: flex;
-    justify-content: center;
-    
-}
+    .input-box i {
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #9292d6;
+    }
 
+    #submit {
+      background: #9292d6;
+      border: none;
+      padding: 12px;
+      border-radius: 30px;
+      width: 100%;
+      font-size: 16px;
+      color: white;
+      cursor: pointer;
+      transition: 0.3s;
+    }
 
-.nav-search{
-    display: flex;
-    align-items: center;
-    
-    width: 770px;
-    height: 35px;
-    border-radius: 4px;
-    justify-content: space-evenly;
-   
-    padding: 2px;
-}
+    #submit:hover {
+      background: aquamarine;
+      color: black;
+      transform: scale(1.05);
+      box-shadow: 0px 0px 15px aquamarine;
+    }
 
+    #signup-link {
+      margin-top: 15px;
+      font-size: 14px;
+      color: #9292d6;
+    }
 
+    #signup-link a {
+      color: aquamarine;
+      text-decoration: none;
+      font-weight: bold;
+    }
 
-.search-input{
-    width: 100%;
-    font-size: 1.8rem;
-    border: none;
-    height:40px ;
-}
+    #signup-link a:hover {
+      text-decoration: underline;
+    }
 
-.search-icon{
-    width: 60px;
-    background-color: black;
-    height: 40px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border: none;
-    font-size: 1.8rem;
-    border-top-right-radius: 4px;
-    border-bottom-right-radius: 4px;
-   
-}
+    #message {
+      margin-top: 15px;
+      font-size: 14px;
+      color: red;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <p id="login-heading">Login to your Music Account </p>
 
-span{
-    font-size: 0.8 rem;
-}
+    <form id="login">
+      <div class="input-box">
+        <input type="email" id="email" placeholder="Enter your email" required>
+        <i class="fa-solid fa-envelope"></i>
+      </div>
+      <div class="input-box">
+        <input type="password" id="password" placeholder="Password" required>
+        <i class="fa-solid fa-lock"></i>
+      </div>
 
+      <button type="submit" id="submit">Login</button>
+      <p id="message">Invalid email or password ❌</p>
+    </form>
 
-.sign{
-    font-size: 1.4rem;
+    <p id="signup-link">Don’t have an account? <a href="signup.html">Sign up</a></p>
+  </div>
 
+  <script>
+    const form = document.getElementById("login");
+    const email = document.getElementById("email");
+    const password = document.getElementById("password");
+    const message = document.getElementById("message");
 
-}
-
-.login{
-    font-size: 1.6rem;
-    border: 1px solid white;
-    border-radius: 40%;
-    color: #151515;
-    background-color: aliceblue;
-    padding: 10px;
-    
-
-}
-
-.login:hover{
-     transform: scale(1.1);       /* enlarge a little */
-     
-}
-
-
-/* container */
-
-.container{
-    display: flex;
-    margin: 20px;
-    gap: 60px;
-}
-
-.left{
-    width: 35vh;
-    padding: 20px;
-    /* position: fixed;
-    top: 150px; */
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-    padding: 20px;
-}
-
-
-
-
-.right{
-    width: 65vh;
-    /* background-color:#212323 ; */
-    /* top: 150px;
-    left: 400px;
-    position: absolute; */
-    margin-top: 20px;
-}
-
-.lib{
-    color: white;
-    font-size: 1.2rem;
-    background-color:#212323 ;
-    width: 90%;
-    padding: 10px;
-    
-}
-
-.create{
-    color: white;
-    font-size: 1.2rem;
-    background-color:#212323 ;
-    width: 90%;
-    padding: 10px;
-
-}
-
-.like{
-    color: white;
-    font-size: 1.2rem;
-    background-color:#212323 ;
-    width: 90%;
-    padding: 10px;
-
-}
-
-.collection{
-    color: white;
-    font-size: 1.2rem;
-    background-color:#212323 ;
-    width: 90%;
-    padding: 10px;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    
-
-}
-
-.collection p{
-    font-size: 1.2rem;
-    margin: auto;
-    color: darkgray;
-    background-color: #212323;
-
-}
-
-.bar{
-    padding: 10px;
-}
-.bar:hover{
-    border: 2px solid ghostwhite;
-    cursor: pointer;
-}
-
-/* right box */
-.trending{
-    color: white;
-    font-size: 1.6rem;
-}
-
-.songs{
-    display: flex;
-    gap: 10px;
-}
-.songs-card:hover{
-    border: 2px solid grey;
-    cursor: pointer;
-}
-
-
-
-.song-card {
-    position: relative;
-    /* margin-right: 15px;
-    border-radius: 10px; */
-    /* overflow: hidden;
-    cursor: pointer; */
-}
-
-/* .song-card img {
-    width: 200px;
-    height: 200px;
-    border-radius: 10px;
-    display: block;
-    transition: transform 0.3s ease;
-} */
-
-.song-card:hover img {
-    transform: scale(1.05); /* little zoom effect */
-}
-
-/* Hidden play button */
-.play-btn {
-    position: absolute;
-    bottom: 20px;
-    right: 20px;
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
-    background-color: #9292d6; /* Spotify green */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    opacity: 0;
-    transform: scale(0.8);
-    transition: opacity 0.3s ease, transform 0.3s ease;
-}
-
-.play-btn i {
-    color: white;
-    font-size: 20px;
-    background-color: #9292d6;
-}
-
-
-/* Show play button on hover */
-.song-card:hover .play-btn {
-    opacity: 1;
-    transform: scale(1);
-}
-
-/* artist */
-.popartist{
-    margin-top: 50px;
-    padding: 20px;
-    color: white;
-    font-size: 1.8rem;
-}
-.artistbox{
-    display: flex;
-    gap: 20px;
-    padding: 10px;
-    
-    
-}
-
-.singer img{
-    border-radius: 50%;
-    border: 2px solid gray;
-}
-
-.singer{
-    font-size: 1.2rem;
-    margin: auto;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    text-align: center;
-    padding: 10px;
-
-}
-
-.singer:hover{
-    background-color: #4f4f4f;
-}
- span :hover{
-    cursor: pointer;
-
-}
-
-/* albums */
-
-.abc{
-    display: flex;
-    font-size: 0.8rem;
-    
-}
-.box:hover{
-    border: 2px solid gray;
-    transition: 2sec ease;
-}
-
-
+    form.addEventListener("submit", function(e) {
+      e.preventDefault();
+      
+      if(email.value === "user@example.com" && password.value === "12345"){
+        alert("🎶 Login successful! Welcome back 🎶");
+        message.style.display = "none";
+      } else {
+        message.style.display = "block";
+      }
+    });
+  </script>
+</body>
+</html>

@@ -109,7 +109,7 @@ span{
 
 }
 
-.login{
+/* .login{
     font-size: 1.6rem;
     border: 1px solid white;
     border-radius: 40%;
@@ -117,7 +117,16 @@ span{
     background-color: aliceblue;
     padding: 10px;
     
-
+} */
+.login{
+    background-color: white;
+   
+    font-size: 1.6rem;
+    border: 1px solid white;
+    border-radius: 40%;
+    color: #151515;
+    
+    padding: 10px;
 }
 
 .login:hover{
