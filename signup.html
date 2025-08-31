@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Music Signup</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+     background: linear-gradient(270deg, #000000, #2d2d4a, #1a1a40);
+      background-size: 600% 600%;
+      animation: gradientBG 10s ease infinite; 
+      color: white;
+    }
+
+    @keyframes gradientBG {
+      0% {background-position: 0% 50%;}
+      50% {background-position: 100% 50%;}
+      100% {background-position: 0% 50%;}
+    }
+
+    .container {
+      background: rgba(0,0,0,0.8);
+      border-radius: 15px;
+      padding: 60px;
+      width: 350px;
+      box-shadow: 0px 0px 20px #9292d6;
+      text-align: center;
+      height: 500px;
+      width: 500px;
+    }
+
+    #sign-heading {
+      color: #9292d6;
+      font-size: 1.8rem;
+      margin-bottom: 30px;
+    }
+
+    .input-box {
+      position: relative;
+      margin-bottom: 20px;
+    }
+
+    .input-box input {
+      width: 100%;
+      padding: 12px 40px 12px 15px;
+      border-radius: 8px;
+      border: 1px solid #9292d6;
+      background: transparent;
+      color: white;
+      font-size: 14px;
+      outline: none;
+      transition: 0.3s;
+    }
+
+    .input-box input:focus {
+      border-color: aquamarine;
+      box-shadow: 0px 0px 8px aquamarine;
+    }
+
+    .input-box i {
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #9292d6;
+    }
+
+    #submit {
+      background: #9292d6;
+      border: none;
+      padding: 12px;
+      border-radius: 30px;
+      width: 100%;
+      font-size: 16px;
+      color: white;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    #submit:hover {
+      background: aquamarine;
+      color: black;
+      transform: scale(1.05);
+      box-shadow: 0px 0px 15px aquamarine;
+    }
+
+    #message {
+      margin-top: 15px;
+      font-size: 14px;
+      color: red;
+      display: none;
+    }
+
+    #signup-link {
+      margin-top: 15px;
+      font-size: 14px;
+      color: #9292d6;
+    }
+
+    #signup-link a {
+      color: aquamarine;
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    #signup-link a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <p id="sign-heading">Sign up to start listening <i class="fa-solid fa-music"></i></p>
+
+    <form id="sign">
+      <div class="input-box">
+        <input type="email" id="email" placeholder="Enter your email" required>
+        <i class="fa-solid fa-envelope"></i>
+      </div>
+      <div class="input-box">
+        <input type="password" id="password" placeholder="Password" required>
+        <i class="fa-solid fa-lock"></i>
+      </div>
+      <div class="input-box">
+        <input type="password" id="repassword" placeholder="Re-type Password" required>
+        <i class="fa-solid fa-lock"></i>
+      </div>
+
+      <button type="submit" id="submit">Sign Up</button>
+      
+      <p id="signup-link">Already have an account? <a href="login.html">Sign up</a></p>
+    </form>
+  </div>
+
+</body>
+</html>

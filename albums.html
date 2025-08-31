@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <style>
+        *{
+    margin: 0px;
+    font-family: Arial;
+    border:border-box;
+    background-color: black;
+    /* box-sizing: border-box; */
+
+}
+body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh; 
+    margin: 0;
+    background-color: black;
+}
+
+
+.navbar {
+    height: 70px;
+    background-color: #212323;
+    color: rgb(238, 241, 243);
+    display: flex;
+    align-items: center;
+    gap:2px;
+    justify-content: space-evenly;
+    padding: 20px;
+    margin-right: 0%;
+    width: 100%;
+  
+
+
+}
+
+.nav-logo {
+    border: 50%;
+    
+   
+
+}
+
+
+.border{
+    /* border: 2px solid rgb(69, 69, 69); */
+    background-color: #212323;
+    /* font-size: 1.8rem; */
+}
+.border:hover{
+    cursor: pointer;
+    border-bottom: 2px solid white;
+}
+
+.home{
+    border-radius: 50%;
+    height: 40px;
+    width: 40px;
+    font-size: 1.8rem;
+    padding: 10px;
+    background-color: #151515;
+    display: flex;
+    justify-content: center;
+    
+}
+
+
+.nav-search{
+    display: flex;
+    align-items: center;
+    
+    width: 770px;
+    height: 35px;
+    border-radius: 4px;
+    justify-content: space-evenly;
+   
+    padding: 2px;
+}
+
+
+
+.search-input{
+    width: 100%;
+    font-size: 1.8rem;
+    border: none;
+    height:40px ;
+}
+
+.search-icon{
+    width: 60px;
+    background-color: black;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    font-size: 1.8rem;
+    border-top-right-radius: 4px;
+    border-bottom-right-radius: 4px;
+   
+}
+
+span{
+    font-size: 0.8 rem;
+}
+
+
+.sign{
+    font-size: 1.4rem;
+    
+
+
+}
+
+.login{
+    font-size: 1.6rem;
+    border: 1px solid white;
+    border-radius: 40%;
+    color: #151515;
+    background-color: aliceblue;
+    padding: 10px;
+    
+
+}
+
+.login:hover{
+     transform: scale(1.1);       
+     
+}
+
+    </style>
+    <header>
+        <!-- nav bar -->
+        <div class="navbar">
+
+
+    <!-- logo -->
+            <div class="nav-logo border">
+                <div class="logo">
+                    logo
+                </div>
+            </div>
+
+
+    <!-- home -->
+
+            <div class="home border">
+            <i class="fa-sharp fa-solid fa-house" style="color: #f5f8f9;"></i>
+
+            </div>
+
+
+    <!-- nav search -->
+
+             <div class="nav-search border">
+                
+                
+
+
+                <input placeholder="What do you want to play?" class="search-input"/>
+                <div class="search-icon">
+                    <i class="fa-notdog fa-solid fa-magnifying-glass fa-sm" style="color: #f0f2f5;"></i>
+                </div>
+            </div>
+
+            <div class="sign border"><a href="signup.html">Sign up</a></div>
+            <div class="login border">Log in</div>
+
+        </div>
+</header>
+</body>
+</html>
