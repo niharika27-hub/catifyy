@@ -65,12 +65,10 @@ body {
 .nav-search{
     display: flex;
     align-items: center;
-    
     width: 770px;
     height: 35px;
     border-radius: 4px;
-    justify-content: space-evenly;
-   
+    justify-content: space-evenly;   
     padding: 2px;
 }
 
