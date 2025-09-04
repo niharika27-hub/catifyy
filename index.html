@@ -1,198 +1,521 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-     <link rel="stylesheet" href="index.css">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Pastel Neumorphism Music Player</title>
+   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <style>
+    :root{
+      /* 5-color palette (exactly) */
+      --bg: #eaf1ff;           /* soft pastel blue background */
+      --surface: #f6f8ff;      /* elevated surfaces */
+      --text: #2d3348;         /* primary text (dark slate) */
+      --primary: #6e85ff;      /* blue accent for actions */
+      --accent: #ff8db1;       /* soft pink accent */
+
+      /* neumorphic shadows derived from background tone */
+      --shadow-dark: #ccd6ec;
+      --shadow-light: #ffffff;
+      --radius: 18px;
+    }
+
+    /* Reset + base */
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body{
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Inter, "Helvetica Neue", Arial, "Apple Color Emoji","Segoe UI Emoji";
+      line-height: 1.55;
+    }
+    img{ max-width: 100%; display: block; }
+    a{ color: inherit; text-decoration: none; }
+    .sr-only{
+      position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0;
+    }
+
+    .container{ max-width: 1200px; margin: 0 auto; padding: 20px; }
+    .stack-24{ display:grid; gap:24px; }
+    .stack-32{ display:grid; gap:32px; }
+
+    /* Neumorphism helpers */
+    .neu{
+      background: var(--surface);
+      border-radius: var(--radius);
+      box-shadow: 12px 12px 28px var(--shadow-dark), -12px -12px 28px var(--shadow-light);
+    }
+    .neu-inset{
+      background: var(--surface);
+      border-radius: var(--radius);
+      box-shadow: inset 8px 8px 16px var(--shadow-dark), inset -8px -8px 16px var(--shadow-light);
+    }
+    .btn{
+      display:inline-flex; align-items:center; justify-content:center;
+      gap:10px; padding:12px 18px; border-radius: 999px;
+      background: var(--surface);
+      box-shadow: 8px 8px 18px var(--shadow-dark), -8px -8px 18px var(--shadow-light);
+      border: 0; color: var(--text); cursor: pointer; transition: transform .15s ease, box-shadow .2s ease, background .2s ease;
+    }
+    .btn:hover{ transform: translateY(-1px); }
+    .btn:active{
+      box-shadow: inset 8px 8px 16px var(--shadow-dark), inset -8px -8px 16px var(--shadow-light);
+      transform: translateY(0);
+    }
+    .btn-primary{
+      color: white;
+      background: radial-gradient(120% 120% at 30% 20%, var(--primary) 0%, #5e73ff 60%, #5b6bff 100%);
+    }
+    .chip{
+      padding:8px 14px; border-radius:999px;
+      background: var(--surface);
+      box-shadow: 6px 6px 14px var(--shadow-dark), -6px -6px 14px var(--shadow-light);
+      transition: background .2s ease, color .2s ease, box-shadow .2s ease;
+      cursor: pointer; white-space: nowrap;
+    }
+    .chip[data-active="true"]{
+      background: linear-gradient(145deg, var(--primary), #7e97ff);
+      color: #fff;
+      box-shadow: 8px 8px 18px rgba(110,133,255,.35), -8px -8px 18px #fff;
+    }
+
+    /* Navigation */
+    header.nav{
+      position: sticky; top: 0; z-index: 5;
+      backdrop-filter: blur(6px);
+      background: color-mix(in srgb, var(--bg) 85%, white);
+      border-bottom: 1px solid color-mix(in srgb, var(--bg) 70%, #aab7d8);
+    }
+    .nav-inner{ display:flex; align-items:center; justify-content:space-between; gap:16px; padding:14px 0; }
+    .brand{ display:flex; align-items:center; gap:10px; font-weight:700; letter-spacing:.2px; }
+    
+
+    .nav-links{
+        font-size: 2rem;
+    }
+
+    /* Search with filters */
+    .search-wrap{ flex: 1 1 520px; display:flex; gap:10px; align-items:center; justify-content:center; }
+    .search{ flex:1; display:flex; align-items:center; gap:10px; padding:10px 12px; border-radius:999px; background:var(--surface);
+      box-shadow: inset 6px 6px 12px var(--shadow-dark), inset -6px -6px 12px var(--shadow-light);
+    }
+    .search input{
+      flex:1; border:0; outline:0; background:transparent; color:var(--text); font-size:14px;
+    }
+    .filters{ display:flex; gap:8px; overflow:auto; }
+    .nav-links{ display:flex; gap:18px; align-items:center; flex-wrap:wrap; }
+    .nav-links a{ opacity:.9; }
+    .nav-auth{ display:flex; gap:10px; align-items:center; }
+
+    /* Hero Player */
+    .hero{ display:grid; gap:24px; grid-template-columns: 1fr; align-items:center; }
+    .player{ display:grid; gap:24px; padding:24px; }
+    .player-main{ display:grid; place-items:center; gap:16px; }
+    .album{
+      width: 240px; height: 240px; border-radius: 50%;
+      padding: 16px;
+      background: linear-gradient(145deg, #ffffff, #e3eaff);
+      box-shadow: 18px 18px 36px var(--shadow-dark), -18px -18px 36px var(--shadow-light);
+    }
+    .album img{ width:100%; height:100%; object-fit:cover; border-radius:50%; }
+    .title{ font-size:clamp(20px, 3vw, 28px); font-weight:700; text-align:center; }
+    .subtitle{ text-align:center; opacity:.7; }
+
+    .controls{ display:flex; align-items:center; justify-content:center; gap:14px; }
+    .icon-btn{
+      width:44px; height:44px; border-radius:50%;
+      display:grid; place-items:center;
+      background: var(--surface);
+      box-shadow: 8px 8px 18px var(--shadow-dark), -8px -8px 18px var(--shadow-light);
+      cursor:pointer; transition: transform .15s ease, box-shadow .2s ease;
+    }
+    .icon-btn:hover{ transform: translateY(-1px); }
+    .icon-btn:active{ box-shadow: inset 8px 8px 16px var(--shadow-dark), inset -8px -8px 16px var(--shadow-light); }
+
+    .play{
+      width:64px; height:64px; border-radius:50%;
+      display:grid; place-items:center; color:#fff;
+      background: radial-gradient(120% 120% at 35% 25%, var(--primary) 0%, #5f74ff 60%, #5062ff 100%);
+      box-shadow: 12px 12px 26px rgba(110,133,255,.35), -10px -10px 26px #fff;
+    }
+
+    /* Range slider (progress) */
+    .progress-wrap{ display:grid; gap:8px; margin-top:6px; }
+    .time{ display:flex; justify-content:space-between; font-size:12px; opacity:.7; }
+    input[type="range"]{
+      -webkit-appearance:none; width:100%; height:12px; border-radius:999px; background:var(--surface);
+      box-shadow: inset 6px 6px 12px var(--shadow-dark), inset -6px -6px 12px var(--shadow-light);
+      outline:none;
+    }
+    input[type="range"]::-webkit-slider-thumb{
+      -webkit-appearance:none; width:22px; height:22px; border-radius:50%;
+      background: radial-gradient(120% 120% at 35% 25%, var(--primary) 0%, #5f74ff 60%);
+      box-shadow: 6px 6px 12px rgba(110,133,255,.35), -6px -6px 12px #fff;
+      border: 3px solid #fff; cursor:pointer;
+    }
+    input[type="range"]::-moz-range-thumb{
+      width:22px; height:22px; border-radius:50%; background: var(--primary); border:3px solid #fff; cursor:pointer;
+    }
+
+    /* Section headings */
+    .section h2{ font-size: clamp(18px, 2.5vw, 22px); margin:0 0 12px; }
+    .muted{ opacity:.75; }
+
+    /* Horizontal cards (Trending) */
+    .scroll-row{
+      display:grid; grid-auto-flow: column; grid-auto-columns: 180px;
+      gap:16px; overflow-x:auto; padding:6px 4px 10px;
+      scroll-snap-type: x mandatory;
+    }
+    .scroll-row > article{ scroll-snap-align:start; }
+    .card{
+      position:relative; padding:12px; border-radius: var(--radius);
+      background: var(--surface);
+      box-shadow: 10px 10px 22px var(--shadow-dark), -10px -10px 22px var(--shadow-light);
+    }
+    .cover{ border-radius: 14px; overflow:hidden; aspect-ratio:1/1; }
+    .play-overlay{
+      position:absolute; right:16px; bottom:16px; width:44px; height:44px; border-radius:50%;
+      display:grid; place-items:center; color:#fff;
+      background: radial-gradient(120% 120% at 35% 25%, var(--primary) 0%, #5f74ff 60%);
+      box-shadow: 8px 8px 18px rgba(110,133,255,.35), -8px -8px 18px #fff;
+    }
+
+    /* Grid cards (Artists / Albums) */
+    .grid{ display:grid; gap:16px; grid-template-columns: repeat(2, 1fr); }
+    @media (min-width: 720px){
+      .hero{ grid-template-columns: 1.1fr 1fr; }
+      .grid{ grid-template-columns: repeat(4, 1fr); }
+    }
+
+    .artist, .album-card{
+      background: var(--surface);
+      border-radius: var(--radius);
+      padding:14px;
+      box-shadow: 10px 10px 22px var(--shadow-dark), -10px -10px 22px var(--shadow-light);
+      text-align:center;
+    }
+    .avatar{
+      width:96px; height:96px; border-radius:50%; margin: 6px auto 10px;
+      padding:8px; background: linear-gradient(145deg, #ffffff, #e3eaff);
+      box-shadow: 12px 12px 24px var(--shadow-dark), -12px -12px 24px var(--shadow-light);
+    }
+    .avatar img{ width:100%; height:100%; border-radius:50%; object-fit:cover; }
+
+    /* Library list */
+    .list{ display:grid; gap:10px; }
+    .row{
+      display:grid; grid-template-columns: 56px 1fr auto; align-items:center; gap:12px;
+      background: var(--surface); padding:10px 12px; border-radius: 14px;
+      box-shadow: 8px 8px 18px var(--shadow-dark), -8px -8px 18px var(--shadow-light);
+    }
+    .row .thumb{ width:56px; height:56px; border-radius:12px; overflow:hidden; }
+    .row .meta small{ opacity:.7; }
+
+    /* Create playlist CTA */
+    .cta{
+      display:grid; gap:14px; align-items:center; justify-items:start;
+      padding:24px;
+      background: linear-gradient(145deg, #ffffff, #e3eaff);
+      border-radius: var(--radius);
+      box-shadow: 14px 14px 32px var(--shadow-dark), -14px -14px 32px var(--shadow-light);
+    }
+    .cta .btn-primary{
+      box-shadow: 10px 10px 24px rgba(110,133,255,.35), -10px -10px 24px #fff;
+    }
+
+    /* Footer */
+    footer{
+      margin-top: 28px; padding: 20px 0 36px; opacity:.9;
+      border-top: 1px solid color-mix(in srgb, var(--bg) 70%, #aab7d8);
+    }
+    .footer-grid{
+      display:grid; gap:16px; grid-template-columns: 1fr; align-items:center;
+    }
+    .footer-links, .social{ display:flex; flex-wrap:wrap; gap:14px; align-items:center; }
+    .social a{
+      width:38px; height:38px; border-radius:50%; display:grid; place-items:center;
+      background: var(--surface);
+      box-shadow: 6px 6px 12px var(--shadow-dark), -6px -6px 12px var(--shadow-light);
+    }
+
+    /* Simple tab-like filter (no JS) */
+    .filter-group{ display:flex; gap:8px; }
+    .filter-group input{ display:none; }
+    .filter-group label{ user-select:none; }
+    .filter-group input:checked + label{ background: linear-gradient(145deg, var(--primary), #7e97ff); color:#fff; }
+  </style>
 </head>
 <body>
-    <header>
-        <!-- nav bar -->
-        <div class="navbar">
 
-
-    <!-- logo -->
-            <div class="nav-logo border">
-                <div class="logo">
-                    <img src="./images/image.png" height="70px" width="70px"/>
-                </div>
-            </div>
-
-
-    <!-- home -->
-
-            <div class="home border">
-            <i class="fa-sharp fa-solid fa-house" style="color: #f5f8f9;"></i>
-
-            </div>
-
-
-    <!-- nav search -->
-
-             <div class="nav-search border">
-                
-                
-
-
-                <input placeholder="What do you want to play?" class="search-input"/>
-                <div class="search-icon">
-                    <i class="fa-notdog fa-solid fa-magnifying-glass fa-sm" style="color: #f0f2f5;"></i>
-                </div>
-            </div>
-
-            <div class="sign border"><a href="signup.html">Sign up</a></div>
-           
-                <button onclick= "window.location.href='login.html'"class="login" >Log in</button>
-                
-            
-
-        </div>
-</header>
-
-<div class="container">
-
-<div class="left">
-
-
-<div class="lib">
-    Your Library 
-</div>
-
-<div class="create">
-    + Create...
-</div>
-
-
-<div class="like">
-   ❤️Liked Songs
-</div>
-
-<div class="collection">
-    <P>COLLECTION</P>
-    <div class="playlist bar">
-        <i class="fa-solid fa-music"></i>  Playlist</div>
-    <div class="album bar"><i class="fa-regular fa-circle-play"></i>  <a href="track.html">Track</a></div>
-    <div class="artist bar"><i class="fa-solid fa-microphone"></i> <a href="artist.html">Artist</a></div>
-    <div class="albums bar"> <i class="fa-solid fa-circle-dot"></i> <a href="albums.html">Albums</a></div>
-
-    
-
-</div>
-
-
-
-
-
-
-
-</div>
-
-<!-- 
-right box -->
-<div class="right">
-   <div class="trending">
-    Trending Songs<br><br>
-    <div class="songs">
-    <div class="song-card">
-        <img src="./images/ekdantaya.png" height="250px" width="250px">
-        <div class="play-btn"><i class="fa-solid fa-play"></i></div>
-    </div>
-    <div class="song-card">
-        <img src="./images/findingher.png" height="250px" width="250px">
-        <div class="play-btn"><i class="fa-solid fa-play"></i></div>
-    </div>
-    <div class="song-card">
-        <img src="./images/forareason.png" height="250px" width="250px">
-        <div class="play-btn"><i class="fa-solid fa-play"></i></div>
-    </div>
-    <div class="song-card">
-        <img src="./images/makingmemories.png" height="250px" width="250px">
-        <div class="play-btn"><i class="fa-solid fa-play"></i></div>
-    </div>
-    <div class="song-card">
-        <img src="./images/jabwemet.png" height="250px" width="250px">
-        <div class="play-btn"><i class="fa-solid fa-play"></i></div>
-    </div>
-</div>
-
-    
-   </div>
-
-
-
-   <div class="popartist">
-    Popular Artists....<br><br>
-    <div class="artistbox">
-        <div class="karanaujla singer">
-        <img src="./images/karanaujla.jpg" height="200px" width="200px">
-        <br>
-        <span>Karan Aujla</span>
-        </div>
-        <div class="arjit singer">
-        <img src="./images/arjit.jpg" height="200px" width="200px">
-        <br>
-        <span>Arjit Singh</span>
-        </div>
-        <div class="AR singer">
-        <img src="./images/ar.avif" height="200px" width="200px">
-        <br>
-        <span>A.R. Rahman</span>
-        </div>
-        <div class="astif singer">
-        <img src="./images/atif.jpg" height="200px" width="200px">
-        <br>
-        <span>Atif Aslam</span>
-        </div>
-
-    </div>
-
-    <!-- pop albums -->
-<br><br><br>
-    <div class="popalbum">
-    Popular Albums<br><br>
-    <div class="abc">
-        <div class="album box">
-        <img src="./images/album1.png" height="200px" width="200px">
-        <br>
+  <header class="nav">
+    <div class="container nav-inner">
       
-        </div>
+      <div class="brand">
+        <div class="logo-dot" aria-hidden="true"></div>
+        
+        <img src="./images/cat.png" height="100px" width="120px">
+      </div>
 
-        <div class="album box">
-        <img src="./images/album2.png" height="200px" width="200px">
-        <br>
-        
-        </div>
-        
-        
+      <div class="search-wrap">
+        <form class="search" role="search" aria-label="Global">
+          <label for="q" class="sr-only">Search</label>
+          <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M21 21l-4.2-4.2m1.2-4.8a7 7 0 1 1-14 0a7 7 0 0 1 14 0Z"/></svg>
+          <input id="q" name="q" placeholder="Search songs, artists, albums..." />
+        </form>
+        <div class="filters">
+          <div class="filter-group">
+           <input type="radio" name="scope" id="f-songs" />
+            <label class="chip" for="f-songs"><a href="songs.html">Songs</a></label>
+            
+            <input type="radio" name="scope" id="f-artists" />
+            <label class="chip" for="f-artists"><a href="albums.html">Albums</a></label>
+          
+            <input type="radio" name="scope" id="f-playlists"  />
+            <label class="chip" for="f-playlists"><a href="library.html">Library</a></label>
 
-
-        <div class="album box">
-        <img src="./images/album3.png" height="200px" width="200px">
-        <br>
-        
+            <input type="radio" name="scope" id="f-playlists2" />
+            <label class="chip" for="f-playlists2"><a href="./playlist.html">Playlist</a></label>
+            
+            <input type="radio" name="scope" id="f-playlists3" />
+            <label class="chip" for="f-playlists3"><a href="liked.html">liked</a></label>
+          </div>
         </div>
-        
-        <div class="album box">
-        <img src="./images/album4.png" height="200px" width="200px">
-        
-        </div>
-        
-
+      </div>
+&nbsp&nbsp&nbsp&nbsp&nbsp
+      <nav class="nav-links">
+        <a href="index.html"><i class="fa-solid fa-house-user" style="color: #6590e6;"></i></a>
+        <a href="create.html"> <i class="fa-solid fa-plus" style="color: #6590e6;"></i></a>
+        <a href="login.html"> <i class="fa-solid fa-user " style="color: #6590e6;"></i> </a>
+      
+       
+      </nav>
     </div>
+  </header>
 
-   </div>
+  <main class="container stack-32">
+   
+    <section class="hero">
+      <div class="player neu">
+        <div class="player-main">
+          <div class="album" aria-hidden="true">
+            <img src="./images/jabwemet2.jpg" alt="Album art — pastel floral artwork" />
+          </div>
+          <div class="title">Tum se hi</div>
+          <div class="subtitle">Pritam</div>
 
-</div>
+          <div class="controls" aria-label="Playback controls">
+            <button class="icon-btn" aria-label="Previous">
+              <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M6 6h2v12H6zM20 6v12L9 12z"/></svg>
+            </button>
+            <button class="play" aria-label="Play">
+              <svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M8 5v14l11-7z"/></svg>
+            </button>
+            <button class="icon-btn" aria-label="Next">
+              <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M16 6h2v12h-2zM4 6v12l11-6z"/></svg>
+            </button>
+          </div>
+
+          <div class="progress-wrap" aria-label="Song progress">
+            <div class="time"><span>1:21</span><span>3:46</span></div>
+            <input type="range" min="0" max="100" value="40" aria-label="Seek" />
+          </div>
+        </div>
+      </div>
+
+      <aside class="stack-24">
+        <div class="section neu" style="padding:20px;">
+          <h2>Playing Now</h2>
+          <div class="list">
+            <div class="row">
+              <div class="thumb"><img src="./images/gul.jpg" alt="Artwork thumbnail"/></div>
+              <div class="meta">
+                <div>Gul</div>
+                <small>Anuv jain</small>
+              </div>
+              <button class="icon-btn" aria-label="Play">
+                <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M8 5v14l11-7z"/></svg>
+              </button>
+            </div>
+            <div class="row">
+              <div class="thumb"><img src="./images/perfect.jpg" alt="Artwork thumbnail"/></div>
+              <div class="meta">
+                <div>Perfect</div>
+                <small>Ed Sheeran</small>
+              </div>
+              <button class="icon-btn" aria-label="Play">
+                <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M8 5v14l11-7z"/></svg>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="section cta">
+          <h2>Create your perfect playlist</h2>
+          <p class="muted">Collect favorites, reorder tracks, and share with friends.</p>
+          <a class="btn btn-primary" href="#" role="button" aria-label="Create Playlist">+ Create Playlist</a>
+        </div>
+      </aside>
+    </section>
+
+    
+    <section class="section">
+      <h2>Trending Songs</h2>
+      <div class="scroll-row">
+        
+        <article class="card">
+          <div class="cover">
+            <img src="./images/diewithasmile.jpg" alt="Trending song cover" />
+          </div>
+          <div style="margin-top:10px;"><strong>Die with a Smile</strong><br><span class="muted">Lady Gaga</span></div>
+          <div class="play-overlay" aria-hidden="true">
+            <svg width="16" height="16" viewBox="0 0 24 24"><path fill="#fff" d="M8 5v14l11-7z"/></svg>
+          </div>
+        </article>
+
+        <article class="card">
+          <div class="cover">
+            <img src="./images/gul.jpg" alt="Trending song cover" />
+          </div>
+          <div style="margin-top:10px;"><strong>Gul</strong><br><span class="muted">Anuv Jain</span></div>
+          <div class="play-overlay" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24"><path fill="#fff" d="M8 5v14l11-7z"/></svg></div>
+        </article>
+
+        <article class="card">
+          <div class="cover">
+            <img src="./images/alagasman.jpg" alt="Trending song cover" />
+          </div>
+          <div style="margin-top:10px;"><strong>Alag Asman</strong><br><span class="muted">Anuv Jain</span></div>
+          <div class="play-overlay" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24"><path fill="#fff" d="M8 5v14l11-7z"/></svg></div>
+        </article>
+
+        <article class="card">
+          <div class="cover">
+            <img src="./images/forareason.png" alt="Trending song cover" />
+          </div>
+          <div style="margin-top:10px;"><strong>For a Reason</strong><br><span class="muted">Karan Aujla</span></div>
+          <div class="play-overlay" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24"><path fill="#fff" d="M8 5v14l11-7z"/></svg></div>
+        </article>
+      </div>
+    </section>
 
 
-</div>
+    <section class="section">
+      <h2>Top Artists</h2>
+      <div class="grid">
+        <article class="artist">
+          <div class="avatar"><img src="./images/karanaujla4.jpg" alt="Artist portrait"/></div>
+          <strong>Karan Aujla</strong>
+        </article>
+        <article class="artist">
+          <div class="avatar"><img src="./images/arjit.jpg" alt="Artist portrait"/></div>
+          <strong>Arjit Singh</strong>
+        </article>
+        <article class="artist">
+          <div class="avatar"><img src="./images/lata.jpg" alt="Artist portrait"/></div>
+          <strong>lata mangeshkar</strong>
+        </article>
+        <article class="artist">
+          <div class="avatar"><img src="./images/asha.jpg" alt="Artist portrait"/></div>
+          <strong>Asha Bhosle</strong>
+        </article>
+      </div>
+    </section>
 
+     
+    <section class="section">
+      <h2>Albums Collection</h2>
+      <div class="grid">
+        <article class="album-card">
+          <div class="cover"><img src="./images/forareason.png" alt="Album cover"/></div>
+          <div style="margin-top:8px;">
+            <strong>P-POP CULTURE</strong><br><span class="muted">Karan Aujla</span>
+          </div>
+          <div style="margin-top:10px;">
+            <a href="#" class="btn" aria-label="Play album">
+              <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M8 5v14l11-7z"/></svg>
+              Play
+            </a>
+          </div>
+        </article>
 
+        <article class="album-card">
+          <div class="cover"><img src="./images/jotum.jpg" alt="Album cover"/></div>
+          <div style="margin-top:8px;">
+            <strong>JO Tum Mere Ho</strong><br><span class="muted">Anuv Jain</span>
+          </div>
+          <div style="margin-top:10px;">
+            <a href="#" class="btn" aria-label="Play album"><svg width="16" height="16" viewBox="0 0 24 24"><path fill="currentColor" d="M8 5v14l11-7z"/></svg> Play</a>
+          </div>
+        </article>
 
+        <article class="album-card">
+          <div class="cover"><img src="./images/mis.jpg" alt="Album cover"/></div>
+          <div style="margin-top:8px;">
+            <strong>Mismatched</strong><br><span class="muted">Anurag Saikia</span>
+          </div>
+          <div style="margin-top:10px;">
+            <a href="#" class="btn" aria-label="Play album"><svg width="16" height="16" viewBox="0 0 24 24"><path fill="currentColor" d="M8 5v14l11-7z"/></svg> Play</a>
+          </div>
+        </article>
 
+        <article class="album-card">
+          <div class="cover"><img src="./images/yjhd.jpg" alt="Album cover"/></div>
+          <div style="margin-top:8px;">
+            <strong>Yeh Jawaani hai Deewani</strong><br><span class="muted">Pritam</span>
+          </div>
+          <div style="margin-top:10px;">
+            <a href="#" class="btn" aria-label="Play album"><svg width="16" height="16" viewBox="0 0 24 24"><path fill="currentColor" d="M8 5v14l11-7z"/></svg> Play</a>
+          </div>
+        </article>
+      </div>
+    </section>
 
+  
+    <section class="section">
+      <h2>Your Library</h2>
+      <div class="list">
+        <div class="row">
+          <div class="thumb"><img src="./images/lotus.jpg" alt="Saved album cover"/></div>
+          <div class="meta">
+            <div>Recently Played Mix</div>
+            <small>22 songs • Updated today</small>
+          </div>
+          <a class="btn" href="#" aria-label="Open playlist">Open</a>
+        </div>
+        <div class="row">
+          <div class="thumb"><img src="./images/find.jpg" alt="Saved album cover"/></div>
+          <div class="meta">
+            <div>Saved Albums</div>
+            <small>12 albums</small>
+          </div>
+          <a class="btn" href="#" aria-label="View albums">View</a>
+        </div>
+      </div>
+    </section>
+  </main>
 
+  <footer>
+    <div class="container footer-grid">
+      <div class="footer-links">
+        <a href="#">About</a>
+        <a href="#">Help</a>
+        <a href="#">Privacy Policy</a>
+        <a href="#">Terms</a>
+      </div>
+      <div class="social" aria-label="Social media">
+        <a href="#" aria-label="Twitter">
+          <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M4 4h3l5 7l5-7h3l-7.5 10L20 20h-3l-5-7l-5 7H4l7.5-10z"/></svg>
+        </a>
+        <a href="#" aria-label="Instagram">
+          <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M7 2h10a5 5 0 0 1 5 5v10a5 5 0 0 1-5 5H7a5 5 0 0 1-5-5V7a5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3v10a3 3 0 0 0 3 3h10a3 3 0 0 0 3-3V7a3 3 0 0 0-3-3zm5 3a5 5 0 1 1 0 10a5 5 0 0 1 0-10m0 2.2A2.8 2.8 0 1 0 14.8 12A2.8 2.8 0 0 0 12 9.2M18 6.5a1 1 0 1 1-1 1a1 1 0 0 1 1-1"/></svg>
+        </a>
+        <a href="#" aria-label="YouTube">
+          <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M10 15V9l5 3m8-6.5v9A3.5 3.5 0 0 1 19.5 18h-15A3.5 3.5 0 0 1 1 14.5v-9A3.5 3.5 0 0 1 4.5 2h15A3.5 3.5 0 0 1 23 5.5"/></svg>
+        </a>
+      </div>
+    </div>
+  </footer>
 </body>
 </html>
