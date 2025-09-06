@@ -80,7 +80,7 @@
       z-index: 5;
       /* color mix in standard red green blue */
       background: color-mix(in srgb, var(--bg) 85%, white);
-      border-bottom: 1px solid color-mix(in srgb, var(--bg) 70%, #87a7fa);
+      border-bottom: 1px solid color-mix(in srgb, var(--bg) 70%, #aab7d8);
     }
     .nav-inner{ 
         display:flex;
