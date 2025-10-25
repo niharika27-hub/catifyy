@@ -946,7 +946,23 @@
         if(albumData){
           loadAlbum(albumTitle, albumData);
         } else {
-          alert(`Album "${albumTitle}" is not available yet. Try another album!`);
+          console.log('⚠️ Album not configured:', albumTitle);
+          // Show temporary message instead of alert
+          const tempMsg = document.createElement('div');
+          tempMsg.style.cssText = 'position: fixed; top: 20px; left: 50%; transform: translateX(-50%); background: var(--accent); color: white; padding: 15px 30px; border-radius: 12px; z-index: 9999; box-shadow: 0 4px 12px rgba(0,0,0,0.2); animation: slideDown 0.3s ease;';
+          tempMsg.innerHTML = `<i class="fa-solid fa-info-circle"></i> Album "${albumTitle}" is not available yet. Try P-POP Culture, YJHD, or Timeless!`;
+          document.body.appendChild(tempMsg);
+          
+          // Add animation
+          const style = document.createElement('style');
+          style.textContent = '@keyframes slideDown { from { opacity: 0; transform: translate(-50%, -20px); } to { opacity: 1; transform: translate(-50%, 0); } }';
+          document.head.appendChild(style);
+          
+          setTimeout(() => {
+            tempMsg.style.transition = 'opacity 0.3s ease';
+            tempMsg.style.opacity = '0';
+            setTimeout(() => tempMsg.remove(), 300);
+          }, 3000);
         }
       });
     });
@@ -1022,26 +1038,51 @@
               playNext();
             });
             
-            await currentAudio.play();
-            audioPlayed = true;
+            currentAudio.addEventListener('error', () => {
+              console.log('❌ Audio error, trying next song');
+              setTimeout(() => playNext(), 500);
+            });
             
-            // Update play/pause icons
-            playIcon.style.display = 'none';
-            pauseIcon.style.display = 'block';
-            
-            console.log('✅ Playing via API');
+            try {
+              await currentAudio.play();
+              audioPlayed = true;
+              
+              // Update play/pause icons
+              playIcon.style.display = 'none';
+              pauseIcon.style.display = 'block';
+              
+              console.log('✅ Playing via API');
+            } catch(playError) {
+              console.log('❌ Could not play audio:', playError);
+              audioPlayed = false;
+            }
+          } else {
+            console.log('⚠️ No preview URL found for:', song.title);
           }
+        } else {
+          console.log('⚠️ MusicAPI not loaded');
         }
         
         if(!audioPlayed){
-          console.log('⚠️ API not available or song not found');
-          alert(`Could not play "${song.title}". Trying next song...`);
-          setTimeout(() => playNext(), 1000);
+          console.log('⚠️ Skipping to next song');
+          setTimeout(() => {
+            // Only try next song if there are more songs
+            if(currentSongIndex < currentSongs.length - 1){
+              playNext();
+            } else {
+              console.log('⚠️ No more songs in album');
+            }
+          }, 500);
         }
         
       } catch(error){
         console.error('❌ Error playing song:', error);
-        setTimeout(() => playNext(), 1000);
+        // Try next song after delay
+        setTimeout(() => {
+          if(currentSongIndex < currentSongs.length - 1){
+            playNext();
+          }
+        }, 500);
       }
     }
 
