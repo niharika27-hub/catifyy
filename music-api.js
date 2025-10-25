@@ -21,37 +21,50 @@ class MusicAPI {
       const query = encodeURIComponent(`${title} ${artist}`);
       const url = `${this.baseUrl}/search?q=${query}&limit=5`; // Get more results for better matching
       
-      console.log('🔍 Searching:', title, '-', artist);
-      console.log('🌐 API URL:', url);
+      console.log('🔍 Searching Deezer API:', title, '-', artist);
       
       const response = await fetch(url);
       
       if (!response.ok) {
-        console.error('❌ API response not OK:', response.status);
+        console.error('❌ Deezer API response not OK:', response.status);
         return null;
       }
       
       const data = await response.json();
-      console.log('📦 API Response:', data);
+      console.log('📦 Deezer API returned', data.data ? data.data.length : 0, 'results');
       
       if (data.data && data.data.length > 0) {
         // Try to find the best match
         let track = data.data[0];
         
         // Look for exact or close title match
-        const titleLower = title.toLowerCase();
-        const artistLower = artist.toLowerCase();
+        const titleLower = title.toLowerCase().trim();
+        const artistLower = artist.toLowerCase().trim();
         
         for (const t of data.data) {
-          const trackTitleLower = t.title.toLowerCase();
-          const trackArtistLower = t.artist.name.toLowerCase();
+          const trackTitleLower = (t.title || '').toLowerCase().trim();
+          const trackArtistLower = (t.artist && t.artist.name ? t.artist.name : '').toLowerCase().trim();
           
-          if (trackTitleLower.includes(titleLower) || titleLower.includes(trackTitleLower)) {
-            if (trackArtistLower.includes(artistLower) || artistLower.includes(trackArtistLower)) {
-              track = t;
-              break;
-            }
+          // Exact match
+          if (trackTitleLower === titleLower && trackArtistLower === artistLower) {
+            track = t;
+            console.log('✅ Exact match found!');
+            break;
           }
+          
+          // Partial match
+          if ((trackTitleLower.includes(titleLower) || titleLower.includes(trackTitleLower)) &&
+              (trackArtistLower.includes(artistLower) || artistLower.includes(trackArtistLower))) {
+            track = t;
+            console.log('✅ Partial match found');
+            break;
+          }
+        }
+        
+        // Verify preview URL exists
+        if (!track.preview || track.preview === '') {
+          console.log('⚠️ Track found but no preview available');
+          return null;
         }
         
         const result = {
@@ -65,12 +78,12 @@ class MusicAPI {
           duration: track.duration,
           link: track.link
         };
-        console.log('✅ Found:', result.title, 'by', result.artist);
+        console.log('✅ Successfully found:', result.title, 'by', result.artist);
         console.log('🎵 Preview URL:', result.preview_url);
         return result;
       }
       
-      console.log('⚠️ No results found for:', title, artist);
+      console.log('⚠️ No results found on Deezer for:', title, artist);
       return null;
     } catch (error) {
       console.error('❌ Error searching song:', error);
