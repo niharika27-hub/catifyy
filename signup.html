@@ -435,6 +435,66 @@
       </div>
     </div>
   </footer>
+  <script>
+    // signup.js
+
+// Get form and input elements
+const signupForm = document.querySelector('.signup-form');
+const firstNameInput = document.getElementById('firstName');
+const lastNameInput = document.getElementById('lastName');
+const emailInput = document.getElementById('email');
+const passwordInput = document.getElementById('password');
+const confirmPasswordInput = document.getElementById('confirmPassword');
+
+// Handle form submission
+signupForm.addEventListener('submit', function(e) {
+  e.preventDefault(); // Prevent default form submission
+
+  const firstName = firstNameInput.value.trim();
+  const lastName = lastNameInput.value.trim();
+  const email = emailInput.value.trim().toLowerCase();
+  const password = passwordInput.value;
+  const confirmPassword = confirmPasswordInput.value;
+
+  // Basic validation
+  if (!firstName || !lastName || !email || !password) {
+    alert('Please fill in all fields.');
+    return;
+  }
+
+  if (password !== confirmPassword) {
+    alert('Passwords do not match.');
+    return;
+  }
+
+  // Get existing users from localStorage or empty array
+  let users = JSON.parse(localStorage.getItem('users')) || [];
+
+  // Check if email already exists
+  const existingUser = users.find(user => user.email === email);
+  if (existingUser) {
+    alert('Email is already registered. Please login.');
+    return;
+  }
+
+  // Create new user object
+  const newUser = {
+    firstName,
+    lastName,
+    email,
+    password // Storing plain password (for learning/demo purposes)
+  };
+
+  // Add user to array and save to localStorage
+  users.push(newUser);
+  localStorage.setItem('users', JSON.stringify(users));
+
+  alert('Signup successful! You can now login.');
+
+  // Optionally redirect to login page
+  window.location.href = 'login.html';
+});
+  </script>
 
 </body>
 </html>

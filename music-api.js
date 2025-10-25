@@ -7,7 +7,7 @@
 class MusicAPI {
   constructor() {
     this.baseUrl = 'https://api.deezer.com';
-    this.corsProxy = 'https://cors-anywhere.herokuapp.com/'; // For CORS bypass
+    this.corsProxy = 'https://corsproxy.io/?'; // Updated CORS proxy
   }
 
   /**
@@ -19,7 +19,7 @@ class MusicAPI {
   async searchSong(title, artist) {
     try {
       const query = encodeURIComponent(`${title} ${artist}`);
-      const url = `${this.baseUrl}/search?q=${query}&limit=1`;
+      const url = `${this.baseUrl}/search?q=${query}&limit=5`; // Get more results for better matching
       
       console.log('🔍 Searching:', title, '-', artist);
       console.log('🌐 API URL:', url);
@@ -35,7 +35,25 @@ class MusicAPI {
       console.log('📦 API Response:', data);
       
       if (data.data && data.data.length > 0) {
-        const track = data.data[0];
+        // Try to find the best match
+        let track = data.data[0];
+        
+        // Look for exact or close title match
+        const titleLower = title.toLowerCase();
+        const artistLower = artist.toLowerCase();
+        
+        for (const t of data.data) {
+          const trackTitleLower = t.title.toLowerCase();
+          const trackArtistLower = t.artist.name.toLowerCase();
+          
+          if (trackTitleLower.includes(titleLower) || titleLower.includes(trackTitleLower)) {
+            if (trackArtistLower.includes(artistLower) || artistLower.includes(trackArtistLower)) {
+              track = t;
+              break;
+            }
+          }
+        }
+        
         const result = {
           id: track.id,
           title: track.title,

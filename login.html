@@ -365,6 +365,35 @@
       </div>
     </div>
   </footer>
+  <script>
+    // login.js
+
+// Get login form and input elements
+const loginForm = document.querySelector('.login-form');
+const emailInput = document.getElementById('email');
+const passwordInput = document.getElementById('password');
+
+loginForm.addEventListener('submit', function(e) {
+  e.preventDefault(); // Prevent default form submission
+
+  const email = emailInput.value.trim().toLowerCase();
+  const password = passwordInput.value;
+
+  // Get users from localStorage
+  let users = JSON.parse(localStorage.getItem('users')) || [];
+
+  // Find user with matching email and password
+  const user = users.find(u => u.email === email && u.password === password);
+
+  if (user) {
+    alert(Welcome back, ${user.firstName}!);
+    // Optionally, redirect to home page or dashboard
+    window.location.href = 'index.html';
+  } else {
+    alert('Incorrect email or password.');
+  }
+});
+  </script>
 
 </body>
 </html>
