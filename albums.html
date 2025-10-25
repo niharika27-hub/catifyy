@@ -251,6 +251,133 @@
     .filter-group label{ user-select:none; }
     .filter-group input:checked + label{ background: linear-gradient(145deg, var(--primary), #7e97ff); color:#fff; }
 
+    /* Album Modal */
+    .album-modal{
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      backdrop-filter: blur(4px);
+    }
+
+    .album-modal-content{
+      background: var(--surface);
+      border-radius: var(--radius);
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      max-width: 500px;
+      width: 90%;
+      max-height: 80vh;
+      overflow-y: auto;
+      padding: 20px;
+      animation: slideUp 0.3s ease;
+    }
+
+    @keyframes slideUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .album-modal-header{
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      padding-bottom: 15px;
+      border-bottom: 2px solid rgba(110, 133, 255, 0.1);
+    }
+
+    .album-modal-header h2{
+      margin: 0;
+      font-size: 20px;
+      color: var(--text);
+    }
+
+    .album-songs-list{
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .album-song-item{
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      padding: 12px;
+      border-radius: 12px;
+      background: var(--bg);
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .album-song-item:hover{
+      background: color-mix(in srgb, var(--primary) 10%, var(--bg));
+      transform: translateX(4px);
+    }
+
+    .album-song-item.playing{
+      background: linear-gradient(135deg, rgba(110, 133, 255, 0.15), rgba(255, 141, 177, 0.1));
+      border-left: 4px solid var(--primary);
+      padding-left: 11px;
+    }
+
+    .album-song-number{
+      min-width: 30px;
+      text-align: center;
+      font-weight: bold;
+      color: var(--primary);
+      font-size: 14px;
+    }
+
+    .album-song-info{
+      flex: 1;
+    }
+
+    .album-song-title{
+      font-weight: 500;
+      color: var(--text);
+      margin: 0;
+      font-size: 14px;
+    }
+
+    .album-song-artist{
+      font-size: 12px;
+      color: var(--text);
+      opacity: 0.6;
+      margin: 4px 0 0 0;
+    }
+
+    .album-song-play-btn{
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      border: 0;
+      background: var(--primary);
+      color: white;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s ease;
+      flex-shrink: 0;
+    }
+
+    .album-song-play-btn:hover{
+      transform: scale(1.1);
+      box-shadow: 0 4px 12px rgba(110, 133, 255, 0.3);
+    }
+
     /* Bottom Player Bar */
     .bottom-player{
       position: fixed;
@@ -802,6 +929,21 @@
 
   </main>
 
+  <!-- Album Songs Modal -->
+  <div id="albumModal" class="album-modal" style="display: none;">
+    <div class="album-modal-content">
+      <div class="album-modal-header">
+        <h2 id="modalAlbumTitle">Album Songs</h2>
+        <button id="closeModalBtn" class="btn" style="border-radius: 50%; width: 40px; height: 40px; padding: 0; display: flex; align-items: center; justify-content: center;">
+          <i class="fa-solid fa-times"></i>
+        </button>
+      </div>
+      <div id="albumSongsList" class="album-songs-list">
+        <!-- Songs will be inserted here -->
+      </div>
+    </div>
+  </div>
+
   <!-- Bottom Player Bar -->
   <div id="bottomPlayer" class="bottom-player">
     <div class="player-left">
@@ -936,6 +1078,22 @@
     const likeIconEmpty = document.getElementById('likeIconEmpty');
     const likeIconFilled = document.getElementById('likeIconFilled');
     const stopBtn = document.getElementById('stopBtn');
+    
+    // Modal elements
+    const albumModal = document.getElementById('albumModal');
+    const closeModalBtn = document.getElementById('closeModalBtn');
+
+    // Close modal on button click
+    closeModalBtn.addEventListener('click', () => {
+      albumModal.style.display = 'none';
+    });
+
+    // Close modal when clicking outside
+    albumModal.addEventListener('click', (e) => {
+      if(e.target === albumModal){
+        albumModal.style.display = 'none';
+      }
+    });
 
     // Initialize album click handlers
     document.querySelectorAll('.album-card').forEach(card => {
@@ -967,7 +1125,7 @@
       });
     });
 
-    // Load album and play first song
+    // Load album and show songs modal
     async function loadAlbum(albumName, albumData){
       console.log('🎵 Loading album:', albumName);
       
@@ -983,8 +1141,62 @@
         }
       });
       
+      // Update modal header
+      document.getElementById('modalAlbumTitle').textContent = albumName;
+      
+      // Populate songs list in modal
+      const songsList = document.getElementById('albumSongsList');
+      songsList.innerHTML = '';
+      
+      albumData.songs.forEach((song, index) => {
+        const songItem = document.createElement('div');
+        songItem.className = 'album-song-item';
+        if(index === 0) songItem.classList.add('playing');
+        
+        songItem.innerHTML = `
+          <div class="album-song-number">${index + 1}</div>
+          <div class="album-song-info">
+            <p class="album-song-title">${song.title}</p>
+            <p class="album-song-artist">${song.artist}</p>
+          </div>
+          <button class="album-song-play-btn" onclick="event.stopPropagation()">
+            <i class="fa-solid fa-play"></i>
+          </button>
+        `;
+        
+        // Play on row click
+        songItem.addEventListener('click', () => {
+          playSong(index);
+          updateModalDisplay();
+        });
+        
+        // Play on button click
+        songItem.querySelector('.album-song-play-btn').addEventListener('click', () => {
+          playSong(index);
+          updateModalDisplay();
+        });
+        
+        songsList.appendChild(songItem);
+      });
+      
+      // Show modal
+      document.getElementById('albumModal').style.display = 'flex';
+      
       // Play first song
       await playSong(0);
+      updateModalDisplay();
+    }
+    
+    // Update modal to show current playing song
+    function updateModalDisplay(){
+      const items = document.querySelectorAll('.album-song-item');
+      items.forEach((item, index) => {
+        if(index === currentSongIndex){
+          item.classList.add('playing');
+        } else {
+          item.classList.remove('playing');
+        }
+      });
     }
 
     // Play song by index
