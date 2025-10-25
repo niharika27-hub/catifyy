@@ -21,3 +21,12 @@ Thumbs.db
 
 # Logs
 *.log
+npm-debug.log*
+
+# Temp files
+*.tmp
+*.temp
+.cache/
+
+# Test files (use local only)
+test-api.html
