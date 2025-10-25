@@ -6,6 +6,88 @@
   <title>Catifyy</title>
    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
  <link rel="stylesheet" href="create.css">
+ <style>
+   /* Cover upload enhancements */
+   .cover-upload{
+     cursor: pointer;
+     transition: all 0.3s ease;
+   }
+
+   .cover-upload:hover{
+     transform: scale(1.02);
+   }
+
+   .cover-upload.drag-over{
+     background: color-mix(in srgb, var(--primary) 10%, var(--surface));
+     border: 2px dashed var(--primary);
+   }
+
+   .cover-upload.has-image .cover-preview{
+     opacity: 1;
+   }
+
+   .cover-preview{
+     opacity: 0;
+     transition: opacity 0.3s ease;
+   }
+
+   .cover-preview img{
+     display: none;
+     max-width: 100%;
+     border-radius: 12px;
+     margin: 12px auto;
+     box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+   }
+
+   /* Invite button states */
+   .invite-btn{
+     transition: all 0.2s ease;
+   }
+
+   .invite-btn.invited{
+     background: color-mix(in srgb, #4caf50 20%, var(--surface)) !important;
+     color: #4caf50;
+     pointer-events: auto;
+     cursor: pointer;
+   }
+
+   .invite-btn.invited:hover{
+     background: color-mix(in srgb, #f44336 20%, var(--surface)) !important;
+     color: #f44336;
+   }
+
+   .invite-btn.invited:hover::after{
+     content: ' ✕';
+   }
+
+   /* Notification animations */
+   @keyframes slideIn{
+     from{
+       transform: translateX(400px);
+       opacity: 0;
+     }
+     to{
+       transform: translateX(0);
+       opacity: 1;
+     }
+   }
+
+   @keyframes slideOut{
+     from{
+       transform: translateX(0);
+       opacity: 1;
+     }
+     to{
+       transform: translateX(400px);
+       opacity: 0;
+     }
+   }
+
+   /* File input hidden */
+   #cover-photo{
+     display: none;
+   }
+ </style>
 </head>
 <body>
 
@@ -95,7 +177,7 @@
         <div class="cover-upload">
           <input type="file" id="cover-photo" accept="image/*" />
           <div class="cover-preview">
-            <img src="/placeholder.svg?height=120&width=120" alt="Playlist cover preview" />
+            <img src="" alt="Playlist cover preview" />
           </div>
           <p><strong>Click to upload</strong> or drag and drop</p>
           <p style="font-size: 14px; opacity: 0.7;">PNG, JPG up to 5MB</p>
@@ -261,5 +343,382 @@
       </div>
     </div>
   </footer>
+
+  <script>
+    // Get playlists from localStorage
+    function getPlaylists(){
+      const playlists = localStorage.getItem('catifyy_playlists');
+      return playlists ? JSON.parse(playlists) : [];
+    }
+
+    function savePlaylists(playlistsArray){
+      localStorage.setItem('catifyy_playlists', JSON.stringify(playlistsArray));
+    }
+
+    // Track selected songs
+    let selectedSongs = [
+      {
+        title: 'Shape of You',
+        artist: 'Ed Sheeran',
+        artwork: './images/shapeofu.jpg'
+      },
+      {
+        title: 'Water',
+        artist: 'Diljit Dosanjh',
+        artwork: './images/water.jpg'
+      }
+    ];
+
+    // Update selected songs display
+    function updateSelectedSongs(){
+      const container = document.querySelector('.selected-items');
+      container.innerHTML = '';
+      
+      selectedSongs.forEach((song, index) => {
+        const div = document.createElement('div');
+        div.className = 'selected-item';
+        div.innerHTML = `
+          <img src="${song.artwork}" alt="${song.title}" />
+          <div class="search-item-info">
+            <h4>${song.title}</h4>
+            <p>${song.artist}</p>
+          </div>
+          <button class="remove-btn" data-index="${index}">
+            <i class="fa-solid fa-times"></i>
+          </button>
+        `;
+        container.appendChild(div);
+      });
+
+      // Add remove functionality
+      document.querySelectorAll('.remove-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const index = parseInt(btn.dataset.index);
+          selectedSongs.splice(index, 1);
+          updateSelectedSongs();
+        });
+      });
+    }
+
+    // All available songs database (you can expand this)
+    const availableSongs = [
+      { title: 'Gul', artist: 'Anuv Jain', artwork: './images/gul.jpg' },
+      { title: 'Alag Asman', artist: 'Anuv Jain', artwork: './images/alagasman.jpg' },
+      { title: 'Kesariya', artist: 'Arijit Singh', artwork: './images/kesariya.jpg' },
+      { title: 'Shape of You', artist: 'Ed Sheeran', artwork: './images/shapeofu.jpg' },
+      { title: 'Water', artist: 'Diljit Dosanjh', artwork: './images/water.jpg' },
+      { title: 'Softly', artist: 'Karan Aujla', artwork: './images/softly.jpg' },
+      { title: 'Tension', artist: 'Diljit Dosanjh', artwork: './images/tension.jpg' },
+      { title: 'For a Reason', artist: 'Nick Jonas', artwork: './images/forareason.jpg' },
+      { title: 'Die With a Smile', artist: 'Lady Gaga, Bruno Mars', artwork: './images/diewithasmile.jpg' }
+    ];
+
+    // Search functionality
+    const searchInput = document.getElementById('music-search');
+    const searchResults = document.querySelector('.search-results');
+
+    function displaySearchResults(songs){
+      searchResults.innerHTML = '';
+      
+      if(songs.length === 0){
+        searchResults.innerHTML = '<p style="padding: 20px; text-align: center; opacity: 0.6;">No songs found. Try a different search term.</p>';
+        return;
+      }
+
+      songs.forEach(song => {
+        const div = document.createElement('div');
+        div.className = 'search-item';
+        div.innerHTML = `
+          <img src="${song.artwork}" alt="${song.title}" />
+          <div class="search-item-info">
+            <h4>${song.title}</h4>
+            <p>${song.artist}</p>
+          </div>
+          <button class="add-btn">
+            <i class="fa-solid fa-plus"></i>
+          </button>
+        `;
+        searchResults.appendChild(div);
+
+        // Add click handler to add button
+        const addBtn = div.querySelector('.add-btn');
+        addBtn.addEventListener('click', () => {
+          // Check if already added
+          const exists = selectedSongs.some(s => s.title === song.title && s.artist === song.artist);
+          if(!exists){
+            selectedSongs.push({ ...song });
+            updateSelectedSongs();
+            
+            // Visual feedback
+            addBtn.innerHTML = '<i class="fa-solid fa-check"></i>';
+            addBtn.style.background = '#4caf50';
+            setTimeout(() => {
+              addBtn.innerHTML = '<i class="fa-solid fa-plus"></i>';
+              addBtn.style.background = '';
+            }, 1000);
+          } else {
+            // Already added
+            addBtn.innerHTML = '<i class="fa-solid fa-check"></i>';
+            addBtn.style.background = '#ff9800';
+            setTimeout(() => {
+              addBtn.innerHTML = '<i class="fa-solid fa-plus"></i>';
+              addBtn.style.background = '';
+            }, 1000);
+          }
+        });
+      });
+    }
+
+    // Search as user types
+    searchInput.addEventListener('input', (e) => {
+      const searchTerm = e.target.value.toLowerCase().trim();
+      
+      if(searchTerm === ''){
+        // Show all songs when search is empty
+        displaySearchResults(availableSongs);
+        return;
+      }
+
+      // Filter songs by title or artist
+      const filteredSongs = availableSongs.filter(song => 
+        song.title.toLowerCase().includes(searchTerm) ||
+        song.artist.toLowerCase().includes(searchTerm)
+      );
+
+      displaySearchResults(filteredSongs);
+    });
+
+    // Initialize with all songs
+    displaySearchResults(availableSongs);
+
+    // Add song to selection (for initial songs)
+    document.querySelectorAll('.search-results .add-btn').forEach((btn, index) => {
+      btn.addEventListener('click', () => {
+        const item = btn.closest('.search-item');
+        const title = item.querySelector('h4').textContent;
+        const artist = item.querySelector('p').textContent;
+        const artwork = item.querySelector('img').src;
+        
+        // Check if already added
+        const exists = selectedSongs.some(s => s.title === title && s.artist === artist);
+        if(!exists){
+          selectedSongs.push({ title, artist, artwork });
+          updateSelectedSongs();
+          
+          // Visual feedback
+          btn.innerHTML = '<i class="fa-solid fa-check"></i>';
+          btn.style.background = '#4caf50';
+          setTimeout(() => {
+            btn.innerHTML = '<i class="fa-solid fa-plus"></i>';
+            btn.style.background = '';
+          }, 1000);
+        }
+      });
+    });
+
+    // Cover photo upload functionality
+    const coverInput = document.getElementById('cover-photo');
+    const coverPreview = document.querySelector('.cover-preview img');
+    const coverUploadDiv = document.querySelector('.cover-upload');
+    
+    // Make entire div clickable
+    coverUploadDiv.addEventListener('click', () => {
+      coverInput.click();
+    });
+
+    // Prevent click event from bubbling when clicking input
+    coverInput.addEventListener('click', (e) => {
+      e.stopPropagation();
+    });
+    
+    // Handle file selection
+    coverInput.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if(file){
+        // Check file size (5MB limit)
+        if(file.size > 5 * 1024 * 1024){
+          alert('File size must be less than 5MB!');
+          return;
+        }
+
+        // Check file type
+        if(!file.type.match('image.*')){
+          alert('Please select an image file (PNG, JPG, etc.)');
+          return;
+        }
+
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          coverPreview.src = e.target.result;
+          coverPreview.style.display = 'block';
+          coverUploadDiv.classList.add('has-image');
+          console.log('✅ Cover image uploaded');
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+
+    // Drag and drop functionality
+    coverUploadDiv.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      coverUploadDiv.classList.add('drag-over');
+    });
+
+    coverUploadDiv.addEventListener('dragleave', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      coverUploadDiv.classList.remove('drag-over');
+    });
+
+    coverUploadDiv.addEventListener('drop', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      coverUploadDiv.classList.remove('drag-over');
+      
+      const files = e.dataTransfer.files;
+      if(files.length > 0){
+        const file = files[0];
+        
+        // Check file size
+        if(file.size > 5 * 1024 * 1024){
+          alert('File size must be less than 5MB!');
+          return;
+        }
+
+        // Check file type
+        if(!file.type.match('image.*')){
+          alert('Please drop an image file (PNG, JPG, etc.)');
+          return;
+        }
+
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          coverPreview.src = e.target.result;
+          coverPreview.style.display = 'block';
+          coverUploadDiv.classList.add('has-image');
+          console.log('✅ Cover image dropped');
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+
+    // Invite friends functionality
+    document.querySelectorAll('.invite-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        if(btn.classList.contains('invited')){
+          // Uninvite
+          btn.classList.remove('invited');
+          btn.textContent = 'Invite';
+          console.log('❌ Uninvited friend');
+        } else {
+          // Invite
+          btn.classList.add('invited');
+          btn.textContent = 'Invited';
+          
+          // Get friend name
+          const friendName = btn.closest('.friend-item').querySelector('h4').textContent;
+          console.log('✅ Invited:', friendName);
+          
+          // Show notification
+          const notification = document.createElement('div');
+          notification.style.cssText = `
+            position: fixed;
+            top: 80px;
+            right: 20px;
+            background: var(--surface);
+            padding: 16px 24px;
+            border-radius: 12px;
+            box-shadow: 8px 8px 24px var(--shadow-dark), -8px -8px 24px var(--shadow-light);
+            z-index: 1000;
+            animation: slideIn 0.3s ease;
+          `;
+          notification.innerHTML = `
+            <div style="display: flex; align-items: center; gap: 12px;">
+              <i class="fa-solid fa-check-circle" style="color: #4caf50; font-size: 20px;"></i>
+              <span><strong>${friendName}</strong> has been invited!</span>
+            </div>
+          `;
+          document.body.appendChild(notification);
+          
+          setTimeout(() => {
+            notification.style.animation = 'slideOut 0.3s ease';
+            setTimeout(() => notification.remove(), 300);
+          }, 2000);
+        }
+      });
+    });
+
+    // Create Playlist button
+    document.querySelector('.action-btn-primary').addEventListener('click', () => {
+      const nameInput = document.getElementById('playlist-name');
+      const descInput = document.getElementById('playlist-description');
+      
+      const name = nameInput.value.trim();
+      const description = descInput.value.trim();
+      
+      if(!name){
+        alert('Please enter a playlist name!');
+        nameInput.focus();
+        return;
+      }
+
+      if(selectedSongs.length === 0){
+        alert('Please add at least one song to your playlist!');
+        return;
+      }
+
+      // Get invited friends
+      const invitedFriends = [];
+      document.querySelectorAll('.invite-btn.invited').forEach(btn => {
+        const friendItem = btn.closest('.friend-item');
+        const friendName = friendItem.querySelector('h4').textContent;
+        const friendEmail = friendItem.querySelector('p').textContent;
+        invitedFriends.push({ name: friendName, email: friendEmail });
+      });
+
+      // Create playlist object
+      const playlist = {
+        id: Date.now(),
+        name: name,
+        description: description || 'No description',
+        cover: coverPreview.src || './images/cat.png',
+        songs: [...selectedSongs],
+        collaborators: invitedFriends,
+        createdAt: new Date().toISOString(),
+        songCount: selectedSongs.length
+      };
+
+      // Save to localStorage
+      const playlists = getPlaylists();
+      playlists.push(playlist);
+      savePlaylists(playlists);
+
+      console.log('✅ Playlist created:', playlist.name);
+      if(invitedFriends.length > 0){
+        console.log('👥 Collaborators:', invitedFriends.map(f => f.name).join(', '));
+      }
+      
+      // Show success message
+      let message = `Playlist "${name}" created successfully with ${selectedSongs.length} songs!`;
+      if(invitedFriends.length > 0){
+        message += `\n\n${invitedFriends.length} friend${invitedFriends.length > 1 ? 's' : ''} invited to collaborate!`;
+      }
+      alert(message);
+      
+      // Redirect to playlist page
+      window.location.href = 'playlist.html';
+    });
+
+    // Cancel button
+    document.querySelector('.action-btn-secondary').addEventListener('click', () => {
+      if(confirm('Are you sure you want to cancel? All changes will be lost.')){
+        window.location.href = 'playlist.html';
+      }
+    });
+
+    // Initialize
+    updateSelectedSongs();
+  </script>
 </body>
 </html>

@@ -696,5 +696,195 @@
       </div>
     </div>
   </footer>
+
+  <script>
+    // Load library data on page load
+    document.addEventListener('DOMContentLoaded', function() {
+      console.log('📚 Loading library data...');
+      loadLibraryStatistics();
+      loadRecentPlaylists();
+      loadLikedSongsPreview();
+    });
+
+    // Load and update library statistics
+    function loadLibraryStatistics() {
+      const likedSongs = JSON.parse(localStorage.getItem('catifyy_liked_songs') || '[]');
+      const userPlaylists = JSON.parse(localStorage.getItem('catifyy_playlists') || '[]');
+      
+      // Calculate total songs from playlists (unique songs)
+      const allSongs = new Set();
+      userPlaylists.forEach(playlist => {
+        if (playlist.songs) {
+          playlist.songs.forEach(song => allSongs.add(song.title));
+        }
+      });
+      
+      // Update statistics
+      const statCards = document.querySelectorAll('.stat-card');
+      if (statCards[0]) {
+        statCards[0].querySelector('.stat-number').textContent = likedSongs.length;
+        statCards[0].querySelector('.stat-label').textContent = likedSongs.length === 1 ? 'Song' : 'Songs';
+      }
+      if (statCards[2]) {
+        statCards[2].querySelector('.stat-number').textContent = userPlaylists.length;
+        statCards[2].querySelector('.stat-label').textContent = userPlaylists.length === 1 ? 'Playlist' : 'Playlists';
+      }
+      
+      console.log(`✅ Statistics loaded: ${likedSongs.length} liked songs, ${userPlaylists.length} playlists`);
+    }
+
+    // Load recently created playlists
+    function loadRecentPlaylists() {
+      const userPlaylists = JSON.parse(localStorage.getItem('catifyy_playlists') || '[]');
+      const playlistGrid = document.querySelector('.library-section:nth-of-type(2) .playlist-grid');
+      
+      if (!playlistGrid) return;
+      
+      if (userPlaylists.length === 0) {
+        playlistGrid.innerHTML = `
+          <div style="grid-column: 1/-1; text-align: center; padding: 2rem; color: var(--text-secondary);">
+            <i class="fa-solid fa-folder-open" style="font-size: 3rem; margin-bottom: 1rem; opacity: 0.3;"></i>
+            <p>No playlists created yet</p>
+            <a href="create.html" style="color: var(--primary); margin-top: 1rem; display: inline-block;">Create your first playlist</a>
+          </div>
+        `;
+        return;
+      }
+      
+      // Show most recent playlists (up to 4)
+      const recentPlaylists = userPlaylists.slice(0, 4);
+      playlistGrid.innerHTML = '';
+      
+      recentPlaylists.forEach(playlist => {
+        const songCount = playlist.songs ? playlist.songs.length : 0;
+        const totalDuration = calculatePlaylistDuration(playlist.songs || []);
+        
+        const playlistCard = document.createElement('div');
+        playlistCard.className = 'playlist-card';
+        playlistCard.style.cursor = 'pointer';
+        playlistCard.innerHTML = `
+          <div class="playlist-artwork">
+            <img src="${playlist.cover || './images/default-playlist.jpg'}" alt="${playlist.name}"/>
+            <button class="playlist-play-btn">
+              <svg width="12" height="12" viewBox="0 0 24 24"><path fill="currentColor" d="M8 5v14l11-7z"/></svg>
+            </button>
+          </div>
+          <div class="playlist-info">
+            <h3>${playlist.name}</h3>
+            <div class="playlist-meta">${songCount} songs${totalDuration ? ' • ' + totalDuration : ''}</div>
+          </div>
+        `;
+        
+        // Make card clickable to go to playlist page
+        playlistCard.addEventListener('click', () => {
+          window.location.href = 'playlist.html';
+        });
+        
+        playlistGrid.appendChild(playlistCard);
+      });
+      
+      console.log(`✅ Loaded ${recentPlaylists.length} recent playlists`);
+    }
+
+    // Calculate playlist duration
+    function calculatePlaylistDuration(songs) {
+      if (!songs || songs.length === 0) return '';
+      
+      // Estimate 3 minutes per song on average
+      const totalMinutes = songs.length * 3;
+      const hours = Math.floor(totalMinutes / 60);
+      const minutes = totalMinutes % 60;
+      
+      if (hours > 0) {
+        return `${hours}h ${minutes}m`;
+      }
+      return `${minutes}m`;
+    }
+
+    // Load liked songs preview
+    function loadLikedSongsPreview() {
+      const likedSongs = JSON.parse(localStorage.getItem('catifyy_liked_songs') || '[]');
+      const activityList = document.querySelector('.library-section:nth-of-type(3) .activity-list');
+      const viewAllBtn = document.querySelector('.library-section:nth-of-type(3) .view-all-btn');
+      
+      if (!activityList) return;
+      
+      // Update "View All" button
+      if (viewAllBtn) {
+        viewAllBtn.textContent = `View All ${likedSongs.length} Songs`;
+        viewAllBtn.href = 'liked.html';
+      }
+      
+      if (likedSongs.length === 0) {
+        activityList.innerHTML = `
+          <div style="text-align: center; padding: 2rem; color: var(--text-secondary);">
+            <i class="fa-solid fa-heart-crack" style="font-size: 3rem; margin-bottom: 1rem; opacity: 0.3;"></i>
+            <p>No liked songs yet</p>
+            <a href="songs.html" style="color: var(--primary); margin-top: 1rem; display: inline-block;">Browse songs to like</a>
+          </div>
+        `;
+        return;
+      }
+      
+      // Show most recent liked songs (up to 4)
+      const recentLiked = likedSongs.slice(0, 4);
+      activityList.innerHTML = '';
+      
+      recentLiked.forEach(song => {
+        const timeAgo = formatTimeAgo(song.likedAt);
+        
+        const activityItem = document.createElement('div');
+        activityItem.className = 'activity-item';
+        activityItem.style.cursor = 'pointer';
+        activityItem.innerHTML = `
+          <div class="activity-artwork">
+            <img src="${song.artwork || song.image || './images/default-song.jpg'}" alt="${song.title}"/>
+          </div>
+          <div class="activity-info">
+            <div class="activity-title">${song.title}</div>
+            <div class="activity-subtitle">${song.artist || 'Unknown Artist'}</div>
+          </div>
+          <div class="activity-time">${timeAgo}</div>
+        `;
+        
+        // Make item clickable to go to liked page
+        activityItem.addEventListener('click', () => {
+          window.location.href = 'liked.html';
+        });
+        
+        activityList.appendChild(activityItem);
+      });
+      
+      console.log(`✅ Loaded ${recentLiked.length} liked songs preview`);
+    }
+
+    // Format timestamp to "X days ago" format
+    function formatTimeAgo(timestamp) {
+      if (!timestamp) return 'Recently';
+      
+      const now = Date.now();
+      const diff = now - timestamp;
+      
+      const seconds = Math.floor(diff / 1000);
+      const minutes = Math.floor(seconds / 60);
+      const hours = Math.floor(minutes / 60);
+      const days = Math.floor(hours / 24);
+      const weeks = Math.floor(days / 7);
+      const months = Math.floor(days / 30);
+      
+      if (months > 0) return months === 1 ? '1 month ago' : `${months} months ago`;
+      if (weeks > 0) return weeks === 1 ? '1 week ago' : `${weeks} weeks ago`;
+      if (days > 0) return days === 1 ? '1 day ago' : `${days} days ago`;
+      if (hours > 0) return hours === 1 ? '1 hour ago' : `${hours} hours ago`;
+      if (minutes > 0) return minutes === 1 ? '1 minute ago' : `${minutes} minutes ago`;
+      return 'Just now';
+    }
+
+    // Update "View All" link for playlists
+    const playlistViewAll = document.querySelector('.library-section:nth-of-type(2) .view-all-btn');
+    if (playlistViewAll) {
+      playlistViewAll.href = 'playlist.html';
+    }
+  </script>
 </body>
 </html>

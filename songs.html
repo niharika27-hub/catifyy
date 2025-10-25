@@ -36,9 +36,17 @@
       position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0;
     }
 
-    .container{ max-width: 1200px; margin: 0 auto; padding: 20px; }
-    .stack-24{ display:grid; gap:24px; }
-    .stack-32{ display:grid; gap:32px; }
+    .container{ max-width: 1200px;
+       margin: 0 auto;
+        padding: 20px;
+       }
+    .stack-24{ display:grid;
+      gap:24px;
+       }
+    .stack-32{ 
+      display:grid;
+      gap:32px; 
+      }
 
     /* Neumorphism helpers */
     .neu{
@@ -377,7 +385,7 @@
     <section class="section">
       <h2>Recently Played</h2>
       <div class="song-list">
-        <div class="song-item">
+        <div class="song-item" data-src="audio/lagjagale.mp3">
           <div class="song-number">1</div>
           <div class="song-artwork">
             <img src="./images/lataalbum.jpg" alt="Lata album cover"/>
@@ -393,7 +401,7 @@
           </button>
         </div>
 
-        <div class="song-item">
+        <div class="song-item" data-src="audio/pardesiya.mp3">
           <div class="song-number">2</div>
           <div class="song-artwork">
             <img src="./images/paramsundri.jpg" alt="Party album cover"/>
@@ -409,7 +417,7 @@
           </button>
         </div>
 
-        <div class="song-item">
+        <div class="song-item" data-src="audio/saiyyan.mp3">
           <div class="song-number">3</div>
           <div class="song-artwork">
             <img src="./images/saiyyan.jpg" alt="Spiritual album cover"/>
@@ -431,7 +439,7 @@
     <section class="section">
       <h2>Popular Songs</h2>
       <div class="song-list">
-        <div class="song-item">
+        <div class="song-item" data-src="audio/forareason.mp3">
           <div class="song-number">1</div>
           <div class="song-artwork">
             <img src="./images/popculture.jpg" alt="popculture album cover"/>
@@ -447,7 +455,7 @@
           </button>
         </div>
 
-        <div class="song-item">
+        <div class="song-item" data-src="audio/diewithasmile.mp3">
           <div class="song-number">2</div>
           <div class="song-artwork">
             <img src="./images/diewithasmile.jpg" alt="Die With A Smile album cover"/>
@@ -463,7 +471,7 @@
           </button>
         </div>
 
-        <div class="song-item">
+        <div class="song-item" data-src="audio/badtameezdil.mp3">
           <div class="song-number">3</div>
           <div class="song-artwork">
             <img src="./images/yjhd.jpg" alt="Badtameez Dil album cover"/>
@@ -479,7 +487,7 @@
           </button>
         </div>
 
-        <div class="song-item">
+        <div class="song-item" data-src="audio/superstar.mp3">
           <div class="song-number">4</div>
           <div class="song-artwork">
             <img src="./images/one.jpg" alt="One from the crowd album cover"/>
@@ -495,7 +503,7 @@
           </button>
         </div>
 
-        <div class="song-item">
+        <div class="song-item" data-src="audio/perfect.mp3">
           <div class="song-number">5</div>
           <div class="song-artwork">
             <img src="./images/perfect.jpg" alt="Perfect album cover"/>
@@ -517,7 +525,7 @@
     <section class="section">
       <h2> Punjabi Songs</h2>
       <div class="song-list">
-        <div class="song-item">
+        <div class="song-item" data-src="audio/forareason.mp3">
           <div class="song-number">1</div>
           <div class="song-artwork">
             <img src="./images/popculture.jpg" alt="Softly album cover"/>
@@ -533,7 +541,7 @@
           </button>
         </div>
 
-        <div class="song-item">
+        <div class="song-item" data-src="audio/ishqjehahogya.mp3">
           <div class="song-number">2</div>
           <div class="song-artwork">
             <img src="./images/Aforarjan2.jpg" alt="Arjan album cover"/>
@@ -549,7 +557,7 @@
           </button>
         </div>
 
-        <div class="song-item">
+        <div class="song-item" data-src="audio/timeless.mp3">
           <div class="song-number">3</div>
           <div class="song-artwork">
             <img src="./images/timeless.jpg" alt="Timeless album cover"/>
@@ -565,7 +573,7 @@
           </button>
         </div>
 
-        <div class="song-item">
+        <div class="song-item" data-src="audio/byanymeans.mp3">
           <div class="song-number">4</div>
           <div class="song-artwork">
             <img src="./images/byanymeans.jpg" alt="By any means album cover"/>
@@ -587,7 +595,7 @@
     <section class="section">
       <h2> Hindi Songs</h2>
       <div class="song-list">
-        <div class="song-item">
+        <div class="song-item" data-src="audio/badtameezdil.mp3">
           <div class="song-number">1</div>
           <div class="song-artwork">
             <img src="./images/yjhd.jpg" alt="Badtameez Dil album cover"/>
@@ -603,7 +611,7 @@
           </button>
         </div>
 
-        <div class="song-item">
+        <div class="song-item" data-src="audio/tumsehi.mp3">
           <div class="song-number">2</div>
           <div class="song-artwork">
             <img src="./images/jabwemet2.jpg" alt="Jab We Met album cover"/>
@@ -619,7 +627,7 @@
           </button>
         </div>
 
-        <div class="song-item">
+        <div class="song-item" data-src="audio/kunfayakun.mp3">
           <div class="song-number">3</div>
           <div class="song-artwork">
             <img src="./images/rockstar.jpg" alt="Rockstar album cover"/>
@@ -635,21 +643,7 @@
           </button>
         </div>
 
-        <div class="song-item">
-          <div class="song-number">4</div>
-          <div class="song-artwork">
-            <img src="./images/chaava.jpg" alt="Chaava album cover"/>
-          </div>
-          <div class="song-info">
-            <div class="song-title">Chaava Title Track</div>
-            <div class="song-artist">A.R. Rahman</div>
-          </div>
-          <div class="song-album">Chaava</div>
-          <div class="song-duration">4:45</div>
-          <button class="song-play-btn">
-            <svg width="12" height="12" viewBox="0 0 24 24"><path fill="currentColor" d="M8 5v14l11-7z"/></svg>
-          </button>
-        </div>
+      
       </div>
     </section>
 
@@ -657,7 +651,7 @@
     <section class="section">
       <h2> English Songs</h2>
       <div class="song-list">
-        <div class="song-item">
+        <div class="song-item" data-src="audio/diewithasmile.mp3">
           <div class="song-number">1</div>
           <div class="song-artwork">
             <img src="./images/diewithasmile.jpg" alt="Die With A Smile album cover"/>
@@ -673,7 +667,7 @@
           </button>
         </div>
 
-        <div class="song-item">
+        <div class="song-item" data-src="audio/perfect.mp3">
           <div class="song-number">2</div>
           <div class="song-artwork">
             <img src="./images/play.png" alt="Perfect album cover"/>
@@ -689,37 +683,8 @@
           </button>
         </div>
 
-        <div class="song-item">
-          <div class="song-number">3</div>
-          <div class="song-artwork">
-            <img src="./images/Futique.jpg" alt="Futique album cover"/>
-          </div>
-          <div class="song-info">
-            <div class="song-title">Instant History</div>
-            <div class="song-artist">Biffy Clyro</div>
-          </div>
-          <div class="song-album">Futique</div>
-          <div class="song-duration">3:47</div>
-          <button class="song-play-btn">
-            <svg width="12" height="12" viewBox="0 0 24 24"><path fill="currentColor" d="M8 5v14l11-7z"/></svg>
-          </button>
-        </div>
-
-        <div class="song-item">
-          <div class="song-number">4</div>
-          <div class="song-artwork">
-            <img src="./images/pulp.jpg" alt="Pulp album cover"/>
-          </div>
-          <div class="song-info">
-            <div class="song-title">Common People</div>
-            <div class="song-artist">Pulp</div>
-          </div>
-          <div class="song-album">Different Class</div>
-          <div class="song-duration">5:50</div>
-          <button class="song-play-btn">
-            <svg width="12" height="12" viewBox="0 0 24 24"><path fill="currentColor" d="M8 5v14l11-7z"/></svg>
-          </button>
-        </div>
+        
+    
       </div>
     </section>
 
@@ -749,5 +714,687 @@
       </div>
     </div>
   </footer>
+
+  <!-- Fixed Bottom Player Bar -->
+  <div class="bottom-player" id="bottomPlayer" style="display: none;">
+    <div class="bottom-player-inner">
+      <!-- Song Info -->
+      <div class="bottom-player-info">
+        <div class="bottom-player-artwork">
+          <img src="./images/cat.png" alt="Current song" id="playerArtwork">
+        </div>
+        <div class="bottom-player-text">
+          <div class="bottom-player-title" id="playerTitle">Select a song</div>
+          <div class="bottom-player-artist" id="playerArtist">—</div>
+        </div>
+      </div>
+
+      <!-- Controls -->
+      <div class="bottom-player-controls">
+        <button class="player-control-btn" id="prevBtn">
+          <svg width="18" height="18" viewBox="0 0 24 24"><path fill="currentColor" d="M6 6h2v12H6zM20 6v12L9 12z"/></svg>
+        </button>
+        <button class="player-control-btn player-control-play" id="playPauseBtn">
+          <svg width="20" height="20" viewBox="0 0 24 24" id="playIcon"><path fill="currentColor" d="M8 5v14l11-7z"/></svg>
+          <svg width="18" height="18" viewBox="0 0 24 24" id="pauseIcon" style="display: none;"><path fill="currentColor" d="M6 6h2v12H6zM16 6h2v12h-2z"/></svg>
+        </button>
+        <button class="player-control-btn" id="nextBtn">
+          <svg width="18" height="18" viewBox="0 0 24 24"><path fill="currentColor" d="M16 6h2v12h-2zM4 6v12l11-6z"/></svg>
+        </button>
+      </div>
+
+      <!-- Progress -->
+      <div class="bottom-player-progress">
+        <span class="progress-time" id="currentTime">0:00</span>
+        <input type="range" id="progressSlider" min="0" max="100" value="0" class="progress-slider">
+        <span class="progress-time" id="totalTime">0:00</span>
+        
+        <!-- Like and Remove buttons -->
+        <div class="player-actions">
+          <button class="player-action-btn" id="likeBtn" title="Like this song">
+            <svg width="18" height="18" viewBox="0 0 24 24" id="likeIconEmpty">
+              <path fill="currentColor" d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5C2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3C19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" stroke="currentColor" stroke-width="1.5" fill="none"/>
+            </svg>
+            <svg width="18" height="18" viewBox="0 0 24 24" id="likeIconFilled" style="display: none;">
+              <path fill="#ff4757" d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5C2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3C19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+            </svg>
+          </button>
+          <button class="player-action-btn" id="removeBtn" title="Stop playback">
+            <svg width="18" height="18" viewBox="0 0 24 24">
+              <path fill="currentColor" d="M19 6.41L17.59 5L12 10.59L6.41 5L5 6.41L10.59 12L5 17.59L6.41 19L12 13.41L17.59 19L19 17.59L13.41 12L19 6.41z"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Music API Integration -->
+  <script src="music-api.js"></script>
+
+  <style>
+    /* Bottom Player Styles */
+    .bottom-player{
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: var(--surface);
+      box-shadow: 0 -8px 24px var(--shadow-dark), 0 -8px 24px rgba(0,0,0,.05);
+      border-top: 1px solid color-mix(in srgb, var(--bg) 70%, #aab7d8);
+      z-index: 100;
+      padding: 12px 20px;
+    }
+
+    .bottom-player-inner{
+      max-width: 1200px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      gap: 20px;
+      align-items: center;
+    }
+
+    .bottom-player-info{
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 0;
+    }
+
+    .bottom-player-artwork{
+      width: 48px;
+      height: 48px;
+      border-radius: 8px;
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+
+    .bottom-player-artwork img{
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .bottom-player-text{
+      min-width: 0;
+      flex: 1;
+    }
+
+    .bottom-player-title{
+      font-weight: 600;
+      font-size: 14px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .bottom-player-artist{
+      font-size: 12px;
+      opacity: .7;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .bottom-player-controls{
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .player-control-btn{
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: var(--surface);
+      box-shadow: 6px 6px 12px var(--shadow-dark), -6px -6px 12px var(--shadow-light);
+      border: 0;
+      cursor: pointer;
+      display: grid;
+      place-items: center;
+      transition: all .2s ease;
+    }
+
+    .player-control-btn:hover{
+      transform: translateY(-2px);
+      box-shadow: 8px 8px 16px var(--shadow-dark), -8px -8px 16px var(--shadow-light);
+    }
+
+    .player-control-btn:active{
+      transform: translateY(0);
+      box-shadow: inset 6px 6px 12px var(--shadow-dark), inset -6px -6px 12px var(--shadow-light);
+    }
+
+    .player-control-play{
+      width: 56px;
+      height: 56px;
+      background: radial-gradient(120% 120% at 35% 25%, var(--primary) 0%, #5f74ff 60%);
+      color: white;
+      box-shadow: 8px 8px 18px rgba(110,133,255,.35), -8px -8px 18px var(--shadow-light);
+    }
+
+    .bottom-player-progress{
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .progress-time{
+      font-size: 12px;
+      opacity: .7;
+      min-width: 40px;
+      text-align: center;
+    }
+
+    .progress-slider{
+      -webkit-appearance: none;
+      appearance: none;
+      flex: 1;
+      height: 6px;
+      border-radius: 999px;
+      background: var(--surface);
+      box-shadow: inset 4px 4px 8px var(--shadow-dark), inset -4px -4px 8px var(--shadow-light);
+      outline: none;
+      cursor: pointer;
+    }
+
+    .progress-slider::-webkit-slider-thumb{
+      -webkit-appearance: none;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: radial-gradient(120% 120% at 35% 25%, var(--primary) 0%, #5f74ff 60%);
+      box-shadow: 4px 4px 8px rgba(110,133,255,.35), -4px -4px 8px var(--shadow-light);
+      border: 2px solid #fff;
+      cursor: pointer;
+    }
+
+    .progress-slider::-moz-range-thumb{
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: radial-gradient(120% 120% at 35% 25%, var(--primary) 0%, #5f74ff 60%);
+      box-shadow: 4px 4px 8px rgba(110,133,255,.35), -4px -4px 8px var(--shadow-light);
+      border: 2px solid #fff;
+      cursor: pointer;
+    }
+
+    /* Player action buttons (like/remove) */
+    .player-actions{
+      display: flex;
+      gap: 8px;
+      margin-left: 16px;
+    }
+
+    .player-action-btn{
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      border: 0;
+      background: var(--surface);
+      box-shadow: 4px 4px 8px var(--shadow-dark), -4px -4px 8px var(--shadow-light);
+      cursor: pointer;
+      display: grid;
+      place-items: center;
+      transition: all .2s ease;
+    }
+
+    .player-action-btn:hover{
+      transform: scale(1.05);
+    }
+
+    .player-action-btn:active{
+      box-shadow: inset 4px 4px 8px var(--shadow-dark), inset -4px -4px 8px var(--shadow-light);
+      transform: scale(0.95);
+    }
+
+    .player-action-btn.liked{
+      background: color-mix(in srgb, #ff4757 15%, var(--surface));
+    }
+
+    /* Currently playing indicator */
+    .song-item.playing{
+      background: color-mix(in srgb, var(--primary) 12%, var(--surface));
+      border-left: 3px solid var(--primary);
+      padding-left: 17px;
+    }
+
+    .song-item.playing .song-play-btn{
+      opacity: 1;
+      transform: scale(1);
+    }
+
+    /* Add padding to body when player is visible */
+    body.player-active{
+      padding-bottom: 100px;
+    }
+
+    @media (max-width: 768px) {
+      .bottom-player-inner{
+        grid-template-columns: 1fr;
+        gap: 12px;
+      }
+
+      .bottom-player-progress{
+        order: -1;
+      }
+
+      .progress-time{
+        min-width: 35px;
+        font-size: 11px;
+      }
+    }
+  </style>
+
+  <script>
+    (function(){
+      // Helper functions
+      function qs(sel){ return document.querySelector(sel); }
+      function qsa(sel){ return Array.from(document.querySelectorAll(sel)); }
+
+      // Player elements
+      const bottomPlayer = qs('#bottomPlayer');
+      const playerArtwork = qs('#playerArtwork');
+      const playerTitle = qs('#playerTitle');
+      const playerArtist = qs('#playerArtist');
+      const playPauseBtn = qs('#playPauseBtn');
+      const playIcon = qs('#playIcon');
+      const pauseIcon = qs('#pauseIcon');
+      const prevBtn = qs('#prevBtn');
+      const nextBtn = qs('#nextBtn');
+      const progressSlider = qs('#progressSlider');
+      const currentTimeEl = qs('#currentTime');
+      const totalTimeEl = qs('#totalTime');
+      const likeBtn = qs('#likeBtn');
+      const likeIconEmpty = qs('#likeIconEmpty');
+      const likeIconFilled = qs('#likeIconFilled');
+      const removeBtn = qs('#removeBtn');
+
+      // LocalStorage for liked songs
+      function getLikedSongs(){
+        const liked = localStorage.getItem('catifyy_liked_songs');
+        return liked ? JSON.parse(liked) : [];
+      }
+
+      function saveLikedSongs(likedArray){
+        localStorage.setItem('catifyy_liked_songs', JSON.stringify(likedArray));
+      }
+
+      function isSongLiked(song){
+        const liked = getLikedSongs();
+        return liked.some(s => s.title === song.title && s.artist === song.artist);
+      }
+
+      function toggleLike(song){
+        let liked = getLikedSongs();
+        const index = liked.findIndex(s => s.title === song.title && s.artist === song.artist);
+        
+        if(index >= 0){
+          // Unlike
+          liked.splice(index, 1);
+          console.log('❌ Removed from likes:', song.title);
+        } else {
+          // Like
+          liked.push({
+            title: song.title,
+            artist: song.artist,
+            album: song.album,
+            artwork: song.artwork,
+            src: song.src,
+            likedAt: new Date().toISOString()
+          });
+          console.log('❤️ Added to likes:', song.title);
+        }
+        
+        saveLikedSongs(liked);
+        updateLikeButton();
+      }
+
+      function updateLikeButton(){
+        if(currentIndex < 0 || currentIndex >= songs.length) return;
+        const song = songs[currentIndex];
+        const isLiked = isSongLiked(song);
+        
+        if(isLiked){
+          likeIconEmpty.style.display = 'none';
+          likeIconFilled.style.display = 'block';
+          likeBtn.classList.add('liked');
+        } else {
+          likeIconEmpty.style.display = 'block';
+          likeIconFilled.style.display = 'none';
+          likeBtn.classList.remove('liked');
+        }
+      }
+
+      // Audio element
+      const audio = new Audio();
+      audio.preload = 'metadata';
+
+      // Build songs list from page
+      const songs = [];
+      qsa('.song-item').forEach((item, idx) => {
+        const artwork = item.querySelector('.song-artwork img');
+        const title = item.querySelector('.song-title');
+        const artist = item.querySelector('.song-artist');
+        const album = item.querySelector('.song-album');
+        
+        songs.push({
+          el: item,
+          title: title ? title.textContent.trim() : 'Unknown',
+          artist: artist ? artist.textContent.trim() : '',
+          album: album ? album.textContent.trim() : '',
+          artwork: artwork ? artwork.src : '',
+          src: item.dataset.src || null
+        });
+      });
+
+      let currentIndex = -1;
+      let isPlaying = false;
+
+      // Format time helper
+      function formatTime(seconds){
+        seconds = Math.floor(seconds);
+        const mins = Math.floor(seconds / 60);
+        const secs = seconds % 60;
+        return mins + ':' + (secs < 10 ? '0' + secs : secs);
+      }
+
+      // Update UI
+      function updatePlayerUI(){
+        if(currentIndex < 0 || currentIndex >= songs.length) return;
+        const song = songs[currentIndex];
+        
+        playerArtwork.src = song.artwork;
+        playerTitle.textContent = song.title;
+        playerArtist.textContent = song.artist;
+
+        // Mark playing item
+        songs.forEach((s, i) => {
+          if(s.el) s.el.classList.toggle('playing', i === currentIndex);
+        });
+
+        // Update button icons in song list
+        qsa('.song-play-btn').forEach((btn, i) => {
+          if(i === currentIndex && isPlaying){
+            btn.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24"><path fill="currentColor" d="M6 6h2v12H6zM16 6h2v12h-2z"/></svg>';
+          } else {
+            btn.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24"><path fill="currentColor" d="M8 5v14l11-7z"/></svg>';
+          }
+        });
+
+        // Update like button
+        updateLikeButton();
+      }
+
+      function updatePlayPauseIcon(){
+        if(isPlaying){
+          playIcon.style.display = 'none';
+          pauseIcon.style.display = 'block';
+        } else {
+          playIcon.style.display = 'block';
+          pauseIcon.style.display = 'none';
+        }
+      }
+
+      function updateProgress(){
+        if(audio.duration && isFinite(audio.duration)){
+          const percent = (audio.currentTime / audio.duration) * 100;
+          progressSlider.value = percent;
+          currentTimeEl.textContent = formatTime(audio.currentTime);
+          totalTimeEl.textContent = formatTime(audio.duration);
+        }
+      }
+
+      // Initialize Music API
+      const musicAPI = new MusicAPI();
+
+      // Try to load audio candidates
+      async function tryLoadAudio(song){
+        // First try API search
+        try{
+          console.log('Searching API for:', song.title, song.artist);
+          const result = await musicAPI.searchSong(song.title, song.artist);
+          
+          if(result && result.preview_url){
+            audio.src = result.preview_url;
+            
+            // Update artwork if API provides better quality
+            if(result.album_cover){
+              playerArtwork.src = result.album_cover;
+              song.artwork = result.album_cover;
+            }
+            
+            const loaded = await new Promise((resolve) => {
+              let done = false;
+              const onLoad = () => { if(done) return; done = true; cleanup(); resolve(true); };
+              const onError = () => { if(done) return; done = true; cleanup(); resolve(false); };
+              const cleanup = () => {
+                audio.removeEventListener('loadedmetadata', onLoad);
+                audio.removeEventListener('error', onError);
+              };
+              audio.addEventListener('loadedmetadata', onLoad);
+              audio.addEventListener('error', onError);
+              audio.load();
+              setTimeout(() => { if(!done){ done = true; cleanup(); resolve(false); } }, 2000);
+            });
+            
+            if(loaded){
+              console.log('✓ Loaded from API:', result.title);
+              return true;
+            }
+          }
+        } catch(e){
+          console.log('API search failed:', e.message);
+        }
+
+        // Fallback to local files
+        const candidates = [];
+        
+        // Try explicit src
+        if(song.src) candidates.push(song.src);
+        
+        // Try to derive from artwork
+        if(song.artwork){
+          const url = song.artwork.split('?')[0].split('#')[0];
+          const match = url.match(/(^.*\/)?([^\/]+?)\.(jpg|jpeg|png|webp|avif)$/i);
+          if(match){
+            const dir = match[1] || '';
+            const name = match[2].toLowerCase().replace(/[^a-z0-9]+/g, '');
+            candidates.push(dir + name + '.mp3');
+            candidates.push(dir + name + '.m4a');
+            candidates.push('audio/' + name + '.mp3');
+          }
+        }
+
+        // Try loading local files
+        for(const candidate of candidates){
+          try{
+            audio.src = candidate;
+            const loaded = await new Promise((resolve) => {
+              let done = false;
+              const onLoad = () => { if(done) return; done = true; cleanup(); resolve(true); };
+              const onError = () => { if(done) return; done = true; cleanup(); resolve(false); };
+              const cleanup = () => {
+                audio.removeEventListener('loadedmetadata', onLoad);
+                audio.removeEventListener('error', onError);
+              };
+              audio.addEventListener('loadedmetadata', onLoad);
+              audio.addEventListener('error', onError);
+              audio.load();
+              setTimeout(() => { if(!done){ done = true; cleanup(); resolve(false); } }, 1500);
+            });
+            if(loaded){
+              console.log('✓ Loaded local file:', candidate);
+              return true;
+            }
+          } catch(e){}
+        }
+        
+        console.log('✗ No audio source found for:', song.title);
+        return false;
+      }
+
+      // Load and play song
+      async function loadSong(index, autoPlay = false){
+        if(index < 0 || index >= songs.length) return;
+        
+        currentIndex = index;
+        const song = songs[currentIndex];
+        
+        updatePlayerUI();
+        bottomPlayer.style.display = 'block';
+        document.body.classList.add('player-active');
+
+        const loaded = await tryLoadAudio(song);
+        
+        if(loaded && autoPlay){
+          try{
+            await audio.play();
+            isPlaying = true;
+            updatePlayPauseIcon();
+            updatePlayerUI();
+          } catch(e){
+            console.log('Autoplay blocked');
+          }
+        } else if(!loaded){
+          console.log('No audio file found for:', song.title);
+        }
+      }
+
+      // Play/Pause
+      async function togglePlayPause(){
+        if(currentIndex < 0){
+          loadSong(0, true);
+          return;
+        }
+
+        if(isPlaying){
+          audio.pause();
+          isPlaying = false;
+        } else {
+          try{
+            await audio.play();
+            isPlaying = true;
+          } catch(e){
+            console.log('Play error:', e);
+          }
+        }
+        updatePlayPauseIcon();
+        updatePlayerUI();
+      }
+
+      // Next/Prev
+      function nextSong(){
+        const nextIndex = (currentIndex + 1) % songs.length;
+        loadSong(nextIndex, true);
+      }
+
+      function prevSong(){
+        const prevIndex = (currentIndex - 1 + songs.length) % songs.length;
+        loadSong(prevIndex, true);
+      }
+
+      // Event listeners
+      audio.addEventListener('timeupdate', updateProgress);
+      audio.addEventListener('ended', nextSong);
+      audio.addEventListener('play', () => { isPlaying = true; updatePlayPauseIcon(); updatePlayerUI(); });
+      audio.addEventListener('pause', () => { isPlaying = false; updatePlayPauseIcon(); updatePlayerUI(); });
+
+      playPauseBtn.addEventListener('click', togglePlayPause);
+      prevBtn.addEventListener('click', prevSong);
+      nextBtn.addEventListener('click', nextSong);
+
+      // Like button
+      likeBtn.addEventListener('click', () => {
+        if(currentIndex >= 0 && currentIndex < songs.length){
+          const song = songs[currentIndex];
+          toggleLike(song);
+        }
+      });
+
+      // Remove button - Stop playback
+      removeBtn.addEventListener('click', () => {
+        // Stop the audio
+        audio.pause();
+        audio.currentTime = 0;
+        isPlaying = false;
+        
+        // Hide player
+        bottomPlayer.style.display = 'none';
+        document.body.classList.remove('player-active');
+        
+        // Clear playing indicators
+        songs.forEach(s => {
+          if(s.el) s.el.classList.remove('playing');
+        });
+        
+        // Reset play buttons
+        qsa('.song-play-btn').forEach(btn => {
+          btn.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24"><path fill="currentColor" d="M8 5v14l11-7z"/></svg>';
+        });
+        
+        currentIndex = -1;
+        updatePlayPauseIcon();
+        
+        console.log('⏹️ Playback stopped');
+      });
+
+      progressSlider.addEventListener('input', () => {
+        if(audio.duration && isFinite(audio.duration)){
+          audio.currentTime = (progressSlider.value / 100) * audio.duration;
+        }
+      });
+
+      // Make song items clickable
+      songs.forEach((song, index) => {
+        if(!song.el) return;
+        
+        // Click on song item
+        song.el.addEventListener('click', (e) => {
+          if(e.target.closest('.song-play-btn')) return; // handled below
+          
+          if(currentIndex === index){
+            togglePlayPause();
+          } else {
+            loadSong(index, true);
+          }
+        });
+
+        // Click on play button
+        const playBtn = song.el.querySelector('.song-play-btn');
+        if(playBtn){
+          playBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            if(currentIndex === index){
+              togglePlayPause();
+            } else {
+              loadSong(index, true);
+            }
+          });
+        }
+      });
+
+      // Keyboard shortcuts
+      document.addEventListener('keydown', (e) => {
+        if(e.target.tagName === 'INPUT') return;
+        
+        if(e.code === 'Space'){
+          e.preventDefault();
+          togglePlayPause();
+        } else if(e.code === 'ArrowRight'){
+          e.preventDefault();
+          nextSong();
+        } else if(e.code === 'ArrowLeft'){
+          e.preventDefault();
+          prevSong();
+        }
+      });
+
+      // Expose for debugging
+      window.musicPlayer = { songs, audio, loadSong, togglePlayPause, nextSong, prevSong };
+    })();
+  </script>
 </body>
 </html>

@@ -4,7 +4,8 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Catify</title>
-   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <script src="./music-api.js"></script>
   <style>
     :root{
       /* 5-color palette (exactly) */
@@ -619,6 +620,42 @@
 
   </main>
 
+  <!-- Playlist Detail Modal -->
+  <div id="playlistModal" class="playlist-modal">
+    <div class="playlist-modal-content">
+      <div class="playlist-modal-header">
+        <button class="modal-close-btn" id="closeModalBtn">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+        <div class="playlist-modal-cover">
+          <img id="modalPlaylistCover" src="" alt="Playlist cover">
+        </div>
+        <div class="playlist-modal-info">
+          <h2 id="modalPlaylistName"></h2>
+          <p id="modalPlaylistDesc"></p>
+          <div class="playlist-modal-meta">
+            <span id="modalPlaylistSongCount"></span>
+            <span id="modalPlaylistDuration"></span>
+          </div>
+          <div class="playlist-modal-controls">
+            <button class="modal-control-btn" id="modalPauseBtn" title="Pause">
+              <i class="fa-solid fa-pause"></i>
+            </button>
+            <button class="modal-control-btn" id="modalPlayBtn" title="Play" style="display: none;">
+              <i class="fa-solid fa-play"></i>
+            </button>
+            <button class="modal-control-btn modal-stop-btn" id="modalStopBtn" title="Stop">
+              <i class="fa-solid fa-stop"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+      <div class="playlist-modal-songs" id="modalSongsList">
+        <!-- Songs will be loaded here -->
+      </div>
+    </div>
+  </div>
+
   <footer>
     <div class="container footer-grid">
       <div class="footer-links">
@@ -640,5 +677,757 @@
       </div>
     </div>
   </footer>
+
+  <script>
+    // Get playlists from localStorage
+    function getPlaylists(){
+      const playlists = localStorage.getItem('catifyy_playlists');
+      return playlists ? JSON.parse(playlists) : [];
+    }
+
+    // Load and display user-created playlists
+    function loadUserPlaylists(){
+      const playlists = getPlaylists();
+      const playlistGrid = document.querySelector('.playlist-grid');
+      
+      if(playlists.length === 0){
+        console.log('ℹ️ No user-created playlists yet');
+        return;
+      }
+
+      // Add user playlists at the beginning
+      playlists.reverse().forEach(playlist => {
+        const card = document.createElement('div');
+        card.className = 'playlist-card';
+        card.dataset.playlistId = playlist.id;
+        
+        card.innerHTML = `
+          <div class="playlist-artwork">
+            <img src="${playlist.cover}" alt="${playlist.name} playlist"/>
+            <button class="playlist-play-btn">
+              <svg width="12" height="12" viewBox="0 0 24 24"><path fill="currentColor" d="M8 5v14l11-7z"/></svg>
+            </button>
+            <button class="playlist-share-btn" title="Share with friends">
+              <svg width="14" height="14" viewBox="0 0 24 24"><path fill="currentColor" d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92s2.92-1.31 2.92-2.92-1.31-2.92-2.92-2.92z"/></svg>
+            </button>
+            <button class="playlist-delete-btn" title="Delete playlist" data-id="${playlist.id}">
+              <svg width="14" height="14" viewBox="0 0 24 24"><path fill="currentColor" d="M19 6.41L17.59 5L12 10.59L6.41 5L5 6.41L10.59 12L5 17.59L6.41 19L12 13.41L17.59 19L19 17.59L13.41 12L19 6.41z"/></svg>
+            </button>
+          </div>
+          <div class="playlist-info">
+            <h3>${playlist.name}</h3>
+            <div class="playlist-meta">
+              <span>${playlist.songCount} songs • ${playlist.description}</span>
+            </div>
+            ${playlist.collaborators && playlist.collaborators.length > 0 ? `
+              <div class="playlist-collaborators">
+                <i class="fa-solid fa-users" style="font-size: 12px; opacity: 0.6;"></i>
+                <small>${playlist.collaborators.length} collaborator${playlist.collaborators.length > 1 ? 's' : ''}</small>
+              </div>
+            ` : ''}
+            <div class="playlist-date">
+              <small>Created ${formatDate(playlist.createdAt)}</small>
+            </div>
+          </div>
+        `;
+        
+        playlistGrid.insertBefore(card, playlistGrid.firstChild);
+      });
+
+      // Update count
+      const viewAllBtn = document.querySelector('.view-all-btn');
+      if(viewAllBtn){
+        const totalPlaylists = document.querySelectorAll('.playlist-card').length;
+        viewAllBtn.textContent = `View All ${totalPlaylists}`;
+      }
+
+      // Add delete functionality
+      document.querySelectorAll('.playlist-delete-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const id = parseInt(btn.dataset.id);
+          deletePlaylist(id);
+        });
+      });
+
+      // Add click handler to open playlist modal
+      document.querySelectorAll('.playlist-card').forEach(card => {
+        card.addEventListener('click', (e) => {
+          // Don't open if clicking delete, share, or play button
+          if(e.target.closest('.playlist-delete-btn') || 
+             e.target.closest('.playlist-share-btn') || 
+             e.target.closest('.playlist-play-btn')){
+            return;
+          }
+          
+          const playlistId = parseInt(card.dataset.playlistId);
+          openPlaylistModal(playlistId);
+        });
+      });
+
+      console.log('✅ Loaded', playlists.length, 'user playlists');
+    }
+
+    // Format date
+    function formatDate(dateString){
+      const date = new Date(dateString);
+      const now = new Date();
+      const diffMs = now - date;
+      const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+      
+      if(diffDays === 0) return 'Today';
+      if(diffDays === 1) return 'Yesterday';
+      if(diffDays < 7) return `${diffDays} days ago`;
+      if(diffDays < 30) return `${Math.floor(diffDays / 7)} weeks ago`;
+      return date.toLocaleDateString();
+    }
+
+    // Delete playlist
+    function deletePlaylist(id){
+      let playlists = getPlaylists();
+      const playlist = playlists.find(p => p.id === id);
+      
+      if(!playlist) return;
+      
+      if(confirm(`Delete playlist "${playlist.name}"? This cannot be undone.`)){
+        playlists = playlists.filter(p => p.id !== id);
+        localStorage.setItem('catifyy_playlists', JSON.stringify(playlists));
+        
+        // Remove from DOM
+        const card = document.querySelector(`[data-playlist-id="${id}"]`);
+        if(card){
+          card.style.transition = 'all 0.3s ease';
+          card.style.opacity = '0';
+          card.style.transform = 'scale(0.8)';
+          setTimeout(() => {
+            card.remove();
+            
+            // Update count
+            const viewAllBtn = document.querySelector('.view-all-btn');
+            if(viewAllBtn){
+              const totalPlaylists = document.querySelectorAll('.playlist-card').length;
+              viewAllBtn.textContent = `View All ${totalPlaylists}`;
+            }
+          }, 300);
+        }
+        
+        console.log('🗑️ Deleted playlist:', playlist.name);
+      }
+    }
+
+    // Audio player for modal
+    let currentAudio = null;
+    let currentPlayingSongIndex = -1;
+    let currentPlaylistSongs = [];
+
+    // Open playlist modal
+    function openPlaylistModal(playlistId){
+      const playlists = getPlaylists();
+      const playlist = playlists.find(p => p.id === playlistId);
+      
+      if(!playlist){
+        console.error('❌ Playlist not found:', playlistId);
+        return;
+      }
+
+      console.log('📂 Opening playlist:', playlist.name);
+
+      const modal = document.getElementById('playlistModal');
+      const modalCover = document.getElementById('modalPlaylistCover');
+      const modalName = document.getElementById('modalPlaylistName');
+      const modalDesc = document.getElementById('modalPlaylistDesc');
+      const modalSongCount = document.getElementById('modalPlaylistSongCount');
+      const modalDuration = document.getElementById('modalPlaylistDuration');
+      const modalSongsList = document.getElementById('modalSongsList');
+
+      // Set playlist info
+      modalCover.src = playlist.cover || './images/default-playlist.jpg';
+      modalName.textContent = playlist.name;
+      modalDesc.textContent = playlist.description || 'No description';
+      modalSongCount.textContent = `${playlist.songs.length} songs`;
+      
+      // Calculate duration
+      const totalMinutes = playlist.songs.length * 3;
+      const hours = Math.floor(totalMinutes / 60);
+      const minutes = totalMinutes % 60;
+      const durationText = hours > 0 ? `${hours}h ${minutes}m` : `${minutes}m`;
+      modalDuration.textContent = durationText;
+
+      // Store songs for playback
+      currentPlaylistSongs = playlist.songs;
+
+      // Display songs
+      modalSongsList.innerHTML = '';
+      playlist.songs.forEach((song, index) => {
+        const songItem = document.createElement('div');
+        songItem.className = 'modal-song-item';
+        songItem.dataset.songIndex = index;
+        
+        songItem.innerHTML = `
+          <div class="modal-song-number">${index + 1}</div>
+          <div class="modal-song-info">
+            <div class="modal-song-title">${song.title}</div>
+            <div class="modal-song-artist">${song.artist || 'Unknown Artist'}</div>
+          </div>
+          <button class="modal-song-play-btn">
+            <i class="fa-solid fa-play"></i>
+          </button>
+        `;
+
+        // Add click handler to play song
+        songItem.addEventListener('click', () => {
+          playSongFromModal(index);
+        });
+
+        modalSongsList.appendChild(songItem);
+      });
+
+      // Show modal
+      modal.classList.add('active');
+      document.body.style.overflow = 'hidden';
+    }
+
+    // Close modal
+    function closePlaylistModal(){
+      const modal = document.getElementById('playlistModal');
+      modal.classList.remove('active');
+      document.body.style.overflow = '';
+    }
+
+    // Play song from modal
+    async function playSongFromModal(songIndex){
+      if(songIndex < 0 || songIndex >= currentPlaylistSongs.length) return;
+
+      const song = currentPlaylistSongs[songIndex];
+      console.log('🎵 Playing from playlist:', song.title, 'by', song.artist);
+
+      // Stop current audio if playing
+      if(currentAudio){
+        currentAudio.pause();
+        currentAudio = null;
+      }
+
+      // Update UI - remove playing class from all songs
+      document.querySelectorAll('.modal-song-item').forEach(item => {
+        item.classList.remove('playing');
+        const playBtn = item.querySelector('.modal-song-play-btn i');
+        if(playBtn){
+          playBtn.className = 'fa-solid fa-play';
+        }
+      });
+
+      // Add playing class to current song
+      const currentSongItem = document.querySelector(`.modal-song-item[data-song-index="${songIndex}"]`);
+      if(currentSongItem){
+        currentSongItem.classList.add('playing');
+        const playBtn = currentSongItem.querySelector('.modal-song-play-btn i');
+        if(playBtn){
+          playBtn.className = 'fa-solid fa-pause';
+        }
+      }
+
+      currentPlayingSongIndex = songIndex;
+
+      let audioPlayed = false;
+
+      // Try to load and play audio
+      try {
+        // First try with API
+        if(typeof MusicAPI !== 'undefined'){
+          const api = new MusicAPI();
+          console.log('🔍 Searching via Deezer API:', song.title, '-', song.artist);
+          
+          const track = await api.searchSong(song.title, song.artist);
+          if(track && track.preview_url){
+            console.log('✅ Found on Deezer API:', track.preview_url);
+            currentAudio = new Audio(track.preview_url);
+            
+            currentAudio.addEventListener('canplay', () => {
+              console.log('✅ Audio ready to play');
+            });
+            
+            currentAudio.addEventListener('error', (e) => {
+              console.error('❌ Audio error:', e);
+              console.log('⚠️ Trying next song...');
+              setTimeout(() => playNextSongInPlaylist(), 1000);
+            });
+            
+            currentAudio.addEventListener('ended', () => {
+              playNextSongInPlaylist();
+            });
+            
+            try {
+              await currentAudio.play();
+              audioPlayed = true;
+              console.log('✅ Playing via Deezer API');
+              
+              // Show pause button when playing
+              document.getElementById('modalPauseBtn').style.display = 'flex';
+              document.getElementById('modalPlayBtn').style.display = 'none';
+            } catch(playError) {
+              console.error('❌ Play error:', playError);
+            }
+          } else {
+            console.log('⚠️ Not found on Deezer API');
+          }
+        } else {
+          console.log('⚠️ MusicAPI not loaded');
+        }
+
+        // Fallback to local file if API failed
+        if(!audioPlayed){
+          // Try multiple possible file paths
+          const possiblePaths = [
+            song.src,
+            `./audio/${song.title}.mp3`,
+            `./audio/${song.title.toLowerCase()}.mp3`,
+            `./audio/${song.title.toLowerCase().replace(/\s+/g, '-')}.mp3`,
+            `./audio/${song.title.toLowerCase().replace(/\s+/g, '')}.mp3`
+          ].filter(path => path); // Remove undefined/null
+
+          console.log('🎵 Trying local files:', possiblePaths);
+
+          for(const audioSrc of possiblePaths){
+            try {
+              currentAudio = new Audio(audioSrc);
+              
+              await new Promise((resolve, reject) => {
+                currentAudio.addEventListener('canplay', resolve, {once: true});
+                currentAudio.addEventListener('error', reject, {once: true});
+                currentAudio.load();
+              });
+
+              currentAudio.addEventListener('ended', () => {
+                playNextSongInPlaylist();
+              });
+
+              await currentAudio.play();
+              audioPlayed = true;
+              console.log('✅ Playing local file:', audioSrc);
+              
+              // Show pause button when playing
+              document.getElementById('modalPauseBtn').style.display = 'flex';
+              document.getElementById('modalPlayBtn').style.display = 'none';
+              break;
+            } catch(error) {
+              console.log('❌ Failed to load:', audioSrc);
+              continue;
+            }
+          }
+        }
+
+        // If still not playing, show error and try next
+        if(!audioPlayed){
+          console.error('❌ Could not play song:', song.title);
+          alert(`Could not play "${song.title}". The song may not be available. Trying next song...`);
+          setTimeout(() => playNextSongInPlaylist(), 1500);
+        }
+        
+      } catch(error){
+        console.error('❌ Error playing song:', error);
+        setTimeout(() => playNextSongInPlaylist(), 1000);
+      }
+    }
+
+    // Play next song in playlist
+    function playNextSongInPlaylist(){
+      if(currentPlayingSongIndex < currentPlaylistSongs.length - 1){
+        playSongFromModal(currentPlayingSongIndex + 1);
+      } else {
+        console.log('✅ Playlist ended');
+        currentPlayingSongIndex = -1;
+      }
+    }
+
+    // Modal close button
+    document.getElementById('closeModalBtn').addEventListener('click', closePlaylistModal);
+
+    // Pause button
+    document.getElementById('modalPauseBtn').addEventListener('click', () => {
+      if(currentAudio && !currentAudio.paused){
+        currentAudio.pause();
+        document.getElementById('modalPauseBtn').style.display = 'none';
+        document.getElementById('modalPlayBtn').style.display = 'flex';
+        console.log('⏸️ Playback paused');
+      }
+    });
+
+    // Play button (resume)
+    document.getElementById('modalPlayBtn').addEventListener('click', () => {
+      if(currentAudio && currentAudio.paused){
+        currentAudio.play();
+        document.getElementById('modalPlayBtn').style.display = 'none';
+        document.getElementById('modalPauseBtn').style.display = 'flex';
+        console.log('▶️ Playback resumed');
+      }
+    });
+
+    // Stop button
+    document.getElementById('modalStopBtn').addEventListener('click', () => {
+      if(currentAudio){
+        currentAudio.pause();
+        currentAudio.currentTime = 0;
+        currentAudio = null;
+        currentPlayingSongIndex = -1;
+        
+        // Remove playing class from all songs
+        document.querySelectorAll('.modal-song-item').forEach(item => {
+          item.classList.remove('playing');
+          const playBtn = item.querySelector('.modal-song-play-btn i');
+          if(playBtn){
+            playBtn.className = 'fa-solid fa-play';
+          }
+        });
+
+        // Reset button states
+        document.getElementById('modalPlayBtn').style.display = 'none';
+        document.getElementById('modalPauseBtn').style.display = 'flex';
+        
+        console.log('⏹️ Playback stopped');
+      }
+    });
+
+    // Close modal when clicking outside
+    document.getElementById('playlistModal').addEventListener('click', (e) => {
+      if(e.target.id === 'playlistModal'){
+        closePlaylistModal();
+      }
+    });
+
+    // Close modal with Escape key
+    document.addEventListener('keydown', (e) => {
+      if(e.key === 'Escape'){
+        closePlaylistModal();
+      }
+    });
+
+    // Load on page load
+    loadUserPlaylists();
+  </script>
+
+  <style>
+    /* Delete button styles */
+    .playlist-delete-btn{
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      border: 0;
+      background: rgba(255, 77, 77, 0.9);
+      color: white;
+      cursor: pointer;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      transition: all .2s ease;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+      z-index: 10;
+    }
+
+    .playlist-card:hover .playlist-delete-btn{
+      display: flex;
+    }
+
+    .playlist-delete-btn:hover{
+      background: rgba(255, 0, 0, 1);
+      transform: scale(1.1);
+    }
+
+    .playlist-delete-btn:active{
+      transform: scale(0.95);
+    }
+
+    .playlist-date{
+      margin-top: 4px;
+      opacity: 0.6;
+      font-size: 12px;
+    }
+
+    .playlist-collaborators{
+      margin-top: 6px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--primary);
+      font-size: 12px;
+    }
+
+    .playlist-collaborators small{
+      opacity: 0.8;
+    }
+
+    /* Playlist Modal Styles */
+    .playlist-modal{
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.7);
+      z-index: 1000;
+      overflow-y: auto;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .playlist-modal.active{
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      padding: 2rem;
+    }
+
+    .playlist-modal-content{
+      background: var(--surface);
+      border-radius: 24px;
+      width: 100%;
+      max-width: 900px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+      margin: 2rem auto;
+      animation: slideUp 0.3s ease;
+    }
+
+    .playlist-modal-header{
+      padding: 2rem;
+      display: flex;
+      gap: 2rem;
+      border-bottom: 1px solid rgba(0,0,0,0.05);
+      position: relative;
+    }
+
+    .modal-close-btn{
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      border: 0;
+      background: var(--bg);
+      color: var(--text-primary);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      box-shadow: 2px 2px 6px var(--shadow-dark), -2px -2px 6px var(--shadow-light);
+      transition: all 0.2s ease;
+    }
+
+    .modal-close-btn:hover{
+      background: var(--accent);
+      color: white;
+      transform: scale(1.1);
+    }
+
+    .playlist-modal-cover{
+      flex-shrink: 0;
+    }
+
+    .playlist-modal-cover img{
+      width: 180px;
+      height: 180px;
+      border-radius: 16px;
+      object-fit: cover;
+      box-shadow: 4px 4px 12px var(--shadow-dark), -4px -4px 12px var(--shadow-light);
+    }
+
+    .playlist-modal-info{
+      flex: 1;
+    }
+
+    .playlist-modal-info h2{
+      font-size: 2rem;
+      margin-bottom: 0.5rem;
+      color: var(--text-primary);
+    }
+
+    .playlist-modal-info p{
+      color: var(--text-secondary);
+      margin-bottom: 1rem;
+    }
+
+    .playlist-modal-meta{
+      display: flex;
+      gap: 1rem;
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+    }
+
+    .playlist-modal-controls{
+      display: flex;
+      gap: 1rem;
+      margin-top: 1.5rem;
+    }
+
+    .modal-control-btn{
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      border: 0;
+      background: var(--primary);
+      color: white;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      box-shadow: 3px 3px 8px var(--shadow-dark), -3px -3px 8px var(--shadow-light);
+      transition: all 0.2s ease;
+    }
+
+    .modal-control-btn:hover{
+      transform: translateY(-2px);
+      box-shadow: 4px 4px 12px var(--shadow-dark), -4px -4px 12px var(--shadow-light);
+    }
+
+    .modal-control-btn:active{
+      transform: translateY(0);
+      box-shadow: 2px 2px 6px var(--shadow-dark), -2px -2px 6px var(--shadow-light);
+    }
+
+    .modal-stop-btn{
+      background: var(--accent);
+    }
+
+    .modal-stop-btn:hover{
+      background: #ff6b94;
+    }
+
+    .playlist-modal-songs{
+      padding: 1.5rem 2rem 2rem;
+      max-height: 500px;
+      overflow-y: auto;
+    }
+
+    .modal-song-item{
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 1rem;
+      border-radius: 12px;
+      background: var(--bg);
+      margin-bottom: 0.75rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      box-shadow: 2px 2px 6px var(--shadow-dark), -2px -2px 6px var(--shadow-light);
+    }
+
+    .modal-song-item:hover{
+      transform: translateY(-2px);
+      box-shadow: 4px 4px 12px var(--shadow-dark), -4px -4px 12px var(--shadow-light);
+    }
+
+    .modal-song-item.playing{
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      color: white;
+    }
+
+    .modal-song-item.playing .modal-song-title,
+    .modal-song-item.playing .modal-song-artist{
+      color: white;
+    }
+
+    .modal-song-number{
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 8px;
+      background: var(--surface);
+      color: var(--text-secondary);
+      font-weight: 600;
+      font-size: 0.9rem;
+      box-shadow: inset 2px 2px 4px var(--shadow-dark), inset -2px -2px 4px var(--shadow-light);
+    }
+
+    .modal-song-item.playing .modal-song-number{
+      background: rgba(255,255,255,0.2);
+      color: white;
+    }
+
+    .modal-song-info{
+      flex: 1;
+    }
+
+    .modal-song-title{
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 0.25rem;
+    }
+
+    .modal-song-artist{
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+    }
+
+    .modal-song-play-btn{
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      border: 0;
+      background: var(--primary);
+      color: white;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 2px 2px 6px var(--shadow-dark), -2px -2px 6px var(--shadow-light);
+      transition: all 0.2s ease;
+      opacity: 0;
+    }
+
+    .modal-song-item:hover .modal-song-play-btn{
+      opacity: 1;
+    }
+
+    .modal-song-item.playing .modal-song-play-btn{
+      opacity: 1;
+      background: white;
+      color: var(--primary);
+    }
+
+    @keyframes fadeIn{
+      from{
+        opacity: 0;
+      }
+      to{
+        opacity: 1;
+      }
+    }
+
+    @keyframes slideUp{
+      from{
+        transform: translateY(30px);
+        opacity: 0;
+      }
+      to{
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+
+    /* Scrollbar styling */
+    .playlist-modal-songs::-webkit-scrollbar{
+      width: 8px;
+    }
+
+    .playlist-modal-songs::-webkit-scrollbar-track{
+      background: var(--bg);
+      border-radius: 4px;
+    }
+
+    .playlist-modal-songs::-webkit-scrollbar-thumb{
+      background: var(--primary);
+      border-radius: 4px;
+    }
+
+    .playlist-modal-songs::-webkit-scrollbar-thumb:hover{
+      background: var(--accent);
+    }
+  </style>
 </body>
 </html>

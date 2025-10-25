@@ -633,5 +633,827 @@
       </div>
     </div>
   </footer>
+
+  <!-- Fixed Bottom Player Bar -->
+  <div class="bottom-player" id="bottomPlayer" style="display: none;">
+    <div class="bottom-player-inner">
+      <!-- Song Info -->
+      <div class="bottom-player-info">
+        <div class="bottom-player-artwork">
+          <img src="./images/cat.png" alt="Current song" id="playerArtwork">
+        </div>
+        <div class="bottom-player-text">
+          <div class="bottom-player-title" id="playerTitle">Select a song</div>
+          <div class="bottom-player-artist" id="playerArtist">—</div>
+        </div>
+      </div>
+
+      <!-- Controls -->
+      <div class="bottom-player-controls">
+        <button class="player-control-btn" id="shuffleBtn" title="Shuffle">
+          <svg width="18" height="18" viewBox="0 0 24 24">
+            <path fill="currentColor" d="M10.59 9.17L5.41 4L4 5.41l5.17 5.17l1.42-1.41M14.5 4l2.04 2.04L4 18.59L5.41 20l12.55-12.55L20 9.5V4h-5.5M14.83 13.41l-1.41 1.41l3.13 3.13L14.5 20H20v-5.5l-2.04 2.04l-3.13-3.13z"/>
+          </svg>
+        </button>
+        <button class="player-control-btn" id="prevBtn">
+          <svg width="18" height="18" viewBox="0 0 24 24"><path fill="currentColor" d="M6 6h2v12H6zM20 6v12L9 12z"/></svg>
+        </button>
+        <button class="player-control-btn player-control-play" id="playPauseBtn">
+          <svg width="20" height="20" viewBox="0 0 24 24" id="playIcon"><path fill="currentColor" d="M8 5v14l11-7z"/></svg>
+          <svg width="18" height="18" viewBox="0 0 24 24" id="pauseIcon" style="display: none;"><path fill="currentColor" d="M6 6h2v12H6zM16 6h2v12h-2z"/></svg>
+        </button>
+        <button class="player-control-btn" id="nextBtn">
+          <svg width="18" height="18" viewBox="0 0 24 24"><path fill="currentColor" d="M16 6h2v12h-2zM4 6v12l11-6z"/></svg>
+        </button>
+      </div>
+
+      <!-- Progress -->
+      <div class="bottom-player-progress">
+        <span class="progress-time" id="currentTime">0:00</span>
+        <input type="range" id="progressSlider" min="0" max="100" value="0" class="progress-slider">
+        <span class="progress-time" id="totalTime">0:00</span>
+        
+        <!-- Like and Remove buttons -->
+        <div class="player-actions">
+          <button class="player-action-btn" id="likeBtn" title="Like this song">
+            <svg width="18" height="18" viewBox="0 0 24 24" id="likeIconEmpty">
+              <path fill="currentColor" d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5C2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3C19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" stroke="currentColor" stroke-width="1.5" fill="none"/>
+            </svg>
+            <svg width="18" height="18" viewBox="0 0 24 24" id="likeIconFilled" style="display: none;">
+              <path fill="#ff4757" d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5C2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3C19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+            </svg>
+          </button>
+          <button class="player-action-btn" id="removeBtn" title="Remove from liked">
+            <svg width="18" height="18" viewBox="0 0 24 24">
+              <path fill="currentColor" d="M19 6.41L17.59 5L12 10.59L6.41 5L5 6.41L10.59 12L5 17.59L6.41 19L12 13.41L17.59 19L19 17.59L13.41 12L19 6.41z"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Player Styles -->
+  <style>
+    /* Bottom Player Styles */
+    .bottom-player{
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: var(--surface);
+      box-shadow: 0 -8px 24px var(--shadow-dark), 0 -8px 24px rgba(0,0,0,.05);
+      border-top: 1px solid color-mix(in srgb, var(--bg) 70%, #aab7d8);
+      z-index: 100;
+      padding: 12px 20px;
+    }
+
+    .bottom-player-inner{
+      max-width: 1200px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      gap: 20px;
+      align-items: center;
+    }
+
+    .bottom-player-info{
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .bottom-player-artwork{
+      width: 56px;
+      height: 56px;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 6px 6px 12px var(--shadow-dark), -6px -6px 12px var(--shadow-light);
+    }
+
+    .bottom-player-artwork img{
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .bottom-player-text{
+      min-width: 0;
+    }
+
+    .bottom-player-title{
+      font-weight: 600;
+      margin-bottom: 4px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .bottom-player-artist{
+      font-size: 14px;
+      opacity: .7;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .bottom-player-controls{
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .player-control-btn{
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      border: 0;
+      background: var(--surface);
+      box-shadow: 6px 6px 12px var(--shadow-dark), -6px -6px 12px var(--shadow-light);
+      cursor: pointer;
+      display: grid;
+      place-items: center;
+      transition: all .2s ease;
+    }
+
+    .player-control-btn:hover{
+      transform: scale(1.05);
+    }
+
+    .player-control-btn:active{
+      box-shadow: inset 6px 6px 12px var(--shadow-dark), inset -6px -6px 12px var(--shadow-light);
+      transform: scale(0.95);
+    }
+
+    .player-control-play{
+      width: 52px;
+      height: 52px;
+      background: radial-gradient(120% 120% at 35% 25%, var(--primary) 0%, #5f74ff 60%);
+      box-shadow: 8px 8px 16px rgba(110,133,255,.35), -8px -8px 16px var(--shadow-light);
+    }
+
+    .player-control-play svg{
+      filter: brightness(0) invert(1);
+    }
+
+    .player-control-btn.shuffle-active{
+      background: color-mix(in srgb, var(--primary) 20%, var(--surface));
+    }
+
+    .player-control-btn.shuffle-active svg{
+      color: var(--primary);
+    }
+
+    .bottom-player-progress{
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .progress-time{
+      font-size: 12px;
+      opacity: .7;
+      min-width: 40px;
+      text-align: center;
+    }
+
+    .progress-slider{
+      -webkit-appearance: none;
+      appearance: none;
+      flex: 1;
+      height: 6px;
+      border-radius: 999px;
+      background: var(--surface);
+      box-shadow: inset 4px 4px 8px var(--shadow-dark), inset -4px -4px 8px var(--shadow-light);
+      outline: none;
+      cursor: pointer;
+    }
+
+    .progress-slider::-webkit-slider-thumb{
+      -webkit-appearance: none;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: radial-gradient(120% 120% at 35% 25%, var(--primary) 0%, #5f74ff 60%);
+      box-shadow: 4px 4px 8px rgba(110,133,255,.35), -4px -4px 8px var(--shadow-light);
+      border: 2px solid #fff;
+      cursor: pointer;
+    }
+
+    .progress-slider::-moz-range-thumb{
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: radial-gradient(120% 120% at 35% 25%, var(--primary) 0%, #5f74ff 60%);
+      box-shadow: 4px 4px 8px rgba(110,133,255,.35), -4px -4px 8px var(--shadow-light);
+      border: 2px solid #fff;
+      cursor: pointer;
+    }
+
+    /* Player action buttons (like/remove) */
+    .player-actions{
+      display: flex;
+      gap: 8px;
+      margin-left: 16px;
+    }
+
+    .player-action-btn{
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      border: 0;
+      background: var(--surface);
+      box-shadow: 4px 4px 8px var(--shadow-dark), -4px -4px 8px var(--shadow-light);
+      cursor: pointer;
+      display: grid;
+      place-items: center;
+      transition: all .2s ease;
+    }
+
+    .player-action-btn:hover{
+      transform: scale(1.05);
+    }
+
+    .player-action-btn:active{
+      box-shadow: inset 4px 4px 8px var(--shadow-dark), inset -4px -4px 8px var(--shadow-light);
+      transform: scale(0.95);
+    }
+
+    .player-action-btn.liked{
+      background: color-mix(in srgb, #ff4757 15%, var(--surface));
+    }
+
+    /* Song item playing indicator */
+    .song-item.playing{
+      background: color-mix(in srgb, var(--primary) 12%, var(--surface));
+      border-left: 3px solid var(--primary);
+    }
+
+    /* Add padding to body when player is visible */
+    body.player-active{
+      padding-bottom: 100px;
+    }
+
+    @media (max-width: 768px) {
+      .bottom-player-inner{
+        grid-template-columns: 1fr;
+        gap: 12px;
+      }
+
+      .bottom-player-progress{
+        order: -1;
+      }
+
+      .progress-time{
+        min-width: 35px;
+        font-size: 11px;
+      }
+    }
+  </style>
+
+  <!-- Music API Integration -->
+  <script src="music-api.js"></script>
+
+  <script>
+    // Helper functions
+    function qs(sel){ return document.querySelector(sel); }
+    function qsa(sel){ return Array.from(document.querySelectorAll(sel)); }
+
+    // Player elements
+    const bottomPlayer = qs('#bottomPlayer');
+    const playerArtwork = qs('#playerArtwork');
+    const playerTitle = qs('#playerTitle');
+    const playerArtist = qs('#playerArtist');
+    const playPauseBtn = qs('#playPauseBtn');
+    const playIcon = qs('#playIcon');
+    const pauseIcon = qs('#pauseIcon');
+    const prevBtn = qs('#prevBtn');
+    const nextBtn = qs('#nextBtn');
+    const shuffleBtn = qs('#shuffleBtn');
+    const progressSlider = qs('#progressSlider');
+    const currentTimeEl = qs('#currentTime');
+    const totalTimeEl = qs('#totalTime');
+    const likeBtn = qs('#likeBtn');
+    const likeIconEmpty = qs('#likeIconEmpty');
+    const likeIconFilled = qs('#likeIconFilled');
+    const removeBtn = qs('#removeBtn');
+
+    // Hero buttons
+    const playAllBtn = qs('.play-all-btn');
+    const shuffleBtnHero = qs('.shuffle-btn');
+
+    // Audio element
+    const audio = new Audio();
+    audio.preload = 'metadata';
+
+    // State
+    let songs = [];
+    let currentIndex = -1;
+    let isPlaying = false;
+    let isShuffleOn = false;
+    let originalOrder = [];
+    let playedIndices = [];
+
+    // Initialize Music API
+    const musicAPI = new MusicAPI();
+
+    // LocalStorage for liked songs
+    function getLikedSongs(){
+      const liked = localStorage.getItem('catifyy_liked_songs');
+      return liked ? JSON.parse(liked) : [];
+    }
+
+    function saveLikedSongs(likedArray){
+      localStorage.setItem('catifyy_liked_songs', JSON.stringify(likedArray));
+    }
+
+    function isSongLiked(song){
+      const liked = getLikedSongs();
+      return liked.some(s => s.title === song.title && s.artist === song.artist);
+    }
+
+    function toggleLike(song){
+      let liked = getLikedSongs();
+      const index = liked.findIndex(s => s.title === song.title && s.artist === song.artist);
+      
+      if(index >= 0){
+        liked.splice(index, 1);
+        console.log('❌ Removed from likes:', song.title);
+      } else {
+        liked.push({
+          title: song.title,
+          artist: song.artist,
+          album: song.album,
+          artwork: song.artwork,
+          src: song.src,
+          likedAt: new Date().toISOString()
+        });
+        console.log('❤️ Added to likes:', song.title);
+      }
+      
+      saveLikedSongs(liked);
+      updateLikeButton();
+    }
+
+    function updateLikeButton(){
+      if(currentIndex < 0 || currentIndex >= songs.length) return;
+      const song = songs[currentIndex];
+      const isLiked = isSongLiked(song);
+      
+      if(isLiked){
+        likeIconEmpty.style.display = 'none';
+        likeIconFilled.style.display = 'block';
+        likeBtn.classList.add('liked');
+      } else {
+        likeIconEmpty.style.display = 'block';
+        likeIconFilled.style.display = 'none';
+        likeBtn.classList.remove('liked');
+      }
+    }
+
+    // Format time
+    function formatTime(seconds){
+      seconds = Math.floor(seconds);
+      const mins = Math.floor(seconds / 60);
+      const secs = seconds % 60;
+      return mins + ':' + (secs < 10 ? '0' + secs : secs);
+    }
+
+    // Update UI
+    function updatePlayerUI(){
+      if(currentIndex < 0 || currentIndex >= songs.length) return;
+      const song = songs[currentIndex];
+      
+      playerArtwork.src = song.artwork;
+      playerTitle.textContent = song.title;
+      playerArtist.textContent = song.artist;
+
+      // Mark playing item
+      songs.forEach((s, i) => {
+        if(s.el) s.el.classList.toggle('playing', i === currentIndex);
+      });
+
+      // Update play button icons
+      qsa('.song-play-btn').forEach((btn, i) => {
+        if(i === currentIndex && isPlaying){
+          btn.innerHTML = '<svg width="10" height="10" viewBox="0 0 24 24"><path fill="currentColor" d="M6 6h2v12H6zM16 6h2v12h-2z"/></svg>';
+        } else {
+          btn.innerHTML = '<svg width="10" height="10" viewBox="0 0 24 24"><path fill="currentColor" d="M8 5v14l11-7z"/></svg>';
+        }
+      });
+
+      updateLikeButton();
+    }
+
+    function updatePlayPauseIcon(){
+      if(isPlaying){
+        playIcon.style.display = 'none';
+        pauseIcon.style.display = 'block';
+      } else {
+        playIcon.style.display = 'block';
+        pauseIcon.style.display = 'none';
+      }
+    }
+
+    function updateProgress(){
+      if(audio.duration && isFinite(audio.duration)){
+        const percent = (audio.currentTime / audio.duration) * 100;
+        progressSlider.value = percent;
+        currentTimeEl.textContent = formatTime(audio.currentTime);
+        totalTimeEl.textContent = formatTime(audio.duration);
+      }
+    }
+
+    // Shuffle functionality
+    function shuffleArray(array){
+      const shuffled = [...array];
+      for(let i = shuffled.length - 1; i > 0; i--){
+        const j = Math.floor(Math.random() * (i + 1));
+        [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+      }
+      return shuffled;
+    }
+
+    function toggleShuffle(){
+      isShuffleOn = !isShuffleOn;
+      
+      if(isShuffleOn){
+        console.log('🔀 Shuffle ON');
+        
+        // Save original order
+        originalOrder = [...songs];
+        
+        // Create shuffled order
+        const currentSong = songs[currentIndex];
+        const indices = songs.map((_, i) => i);
+        const shuffledIndices = shuffleArray(indices.filter(i => i !== currentIndex));
+        
+        // Rebuild songs array with current song first, then shuffled
+        const newSongs = currentIndex >= 0 ? [currentSong, ...shuffledIndices.map(i => originalOrder[i])] : shuffleArray(songs);
+        songs = newSongs;
+        currentIndex = currentIndex >= 0 ? 0 : -1;
+        playedIndices = [];
+        
+      } else {
+        console.log('▶️ Shuffle OFF');
+        
+        // Restore original order
+        const currentSong = songs[currentIndex];
+        songs = [...originalOrder];
+        currentIndex = currentSong ? songs.findIndex(s => s.title === currentSong.title && s.artist === currentSong.artist) : -1;
+      }
+      
+      updatePlayerUI();
+    }
+
+    // Load audio with API fallback
+    async function tryLoadAudio(song){
+      // Try API search first
+      try{
+        console.log('🔍 Searching API for:', song.title, song.artist);
+        const result = await musicAPI.searchSong(song.title, song.artist);
+        
+        if(result && result.preview_url){
+          audio.src = result.preview_url;
+          
+          if(result.album_cover){
+            playerArtwork.src = result.album_cover;
+            song.artwork = result.album_cover;
+          }
+          
+          const loaded = await new Promise((resolve) => {
+            let done = false;
+            const onLoad = () => { if(done) return; done = true; cleanup(); resolve(true); };
+            const onError = () => { if(done) return; done = true; cleanup(); resolve(false); };
+            const cleanup = () => {
+              audio.removeEventListener('loadedmetadata', onLoad);
+              audio.removeEventListener('error', onError);
+            };
+            audio.addEventListener('loadedmetadata', onLoad);
+            audio.addEventListener('error', onError);
+            audio.load();
+            setTimeout(() => { if(!done){ done = true; cleanup(); resolve(false); } }, 2000);
+          });
+          
+          if(loaded){
+            console.log('✅ Loaded from API:', result.title);
+            return true;
+          }
+        }
+      } catch(e){
+        console.log('⚠️ API search failed:', e.message);
+      }
+
+      // Fallback to local file
+      if(song.src){
+        try{
+          audio.src = song.src;
+          const loaded = await new Promise((resolve) => {
+            let done = false;
+            const onLoad = () => { if(done) return; done = true; cleanup(); resolve(true); };
+            const onError = () => { if(done) return; done = true; cleanup(); resolve(false); };
+            const cleanup = () => {
+              audio.removeEventListener('loadedmetadata', onLoad);
+              audio.removeEventListener('error', onError);
+            };
+            audio.addEventListener('loadedmetadata', onLoad);
+            audio.addEventListener('error', onError);
+            audio.load();
+            setTimeout(() => { if(!done){ done = true; cleanup(); resolve(false); } }, 1500);
+          });
+          if(loaded){
+            console.log('✅ Loaded local file');
+            return true;
+          }
+        } catch(e){}
+      }
+      
+      console.log('❌ No audio source found');
+      return false;
+    }
+
+    // Load and play song
+    async function loadSong(index, autoPlay = false){
+      if(index < 0 || index >= songs.length) return;
+      
+      currentIndex = index;
+      const song = songs[currentIndex];
+      
+      updatePlayerUI();
+      bottomPlayer.style.display = 'block';
+      document.body.classList.add('player-active');
+
+      const loaded = await tryLoadAudio(song);
+      
+      if(loaded && autoPlay){
+        try{
+          await audio.play();
+          isPlaying = true;
+          updatePlayPauseIcon();
+          updatePlayerUI();
+        } catch(e){
+          console.log('⚠️ Autoplay blocked');
+        }
+      } else if(!loaded){
+        console.log('⚠️ Could not load audio for:', song.title);
+      }
+    }
+
+    // Playback controls
+    function togglePlayPause(){
+      if(currentIndex < 0 && songs.length > 0){
+        loadSong(0, true);
+        return;
+      }
+      
+      if(audio.paused){
+        audio.play().catch(e => console.log('Play error:', e));
+      } else {
+        audio.pause();
+      }
+    }
+
+    function nextSong(){
+      if(songs.length === 0) return;
+      
+      if(isShuffleOn){
+        playedIndices.push(currentIndex);
+        const unplayed = songs.map((_, i) => i).filter(i => !playedIndices.includes(i));
+        
+        if(unplayed.length > 0){
+          const nextIndex = unplayed[Math.floor(Math.random() * unplayed.length)];
+          loadSong(nextIndex, true);
+        } else {
+          playedIndices = [];
+          loadSong(0, true);
+        }
+      } else {
+        const nextIndex = (currentIndex + 1) % songs.length;
+        loadSong(nextIndex, true);
+      }
+    }
+
+    function prevSong(){
+      if(songs.length === 0) return;
+      const prevIndex = (currentIndex - 1 + songs.length) % songs.length;
+      loadSong(prevIndex, true);
+    }
+
+    // Event listeners
+    audio.addEventListener('timeupdate', updateProgress);
+    audio.addEventListener('ended', nextSong);
+    audio.addEventListener('play', () => { isPlaying = true; updatePlayPauseIcon(); updatePlayerUI(); });
+    audio.addEventListener('pause', () => { isPlaying = false; updatePlayPauseIcon(); updatePlayerUI(); });
+
+    playPauseBtn.addEventListener('click', togglePlayPause);
+    prevBtn.addEventListener('click', prevSong);
+    nextBtn.addEventListener('click', nextSong);
+
+    // Like button
+    likeBtn.addEventListener('click', () => {
+      if(currentIndex >= 0 && currentIndex < songs.length){
+        toggleLike(songs[currentIndex]);
+      }
+    });
+
+    // Remove button
+    removeBtn.addEventListener('click', () => {
+      if(currentIndex >= 0 && currentIndex < songs.length){
+        const song = songs[currentIndex];
+        
+        if(confirm(`Remove "${song.title}" from liked songs?`)){
+          // Remove from localStorage
+          let liked = getLikedSongs();
+          liked = liked.filter(s => !(s.title === song.title && s.artist === song.artist));
+          saveLikedSongs(liked);
+          
+          // Reload page to refresh list
+          loadLikedSongs();
+          
+          // Play next or stop
+          if(songs.length > 0){
+            if(currentIndex >= songs.length) currentIndex = 0;
+            loadSong(currentIndex, isPlaying);
+          } else {
+            audio.pause();
+            bottomPlayer.style.display = 'none';
+            document.body.classList.remove('player-active');
+          }
+        }
+      }
+    });
+
+    progressSlider.addEventListener('input', () => {
+      if(audio.duration && isFinite(audio.duration)){
+        audio.currentTime = (progressSlider.value / 100) * audio.duration;
+      }
+    });
+
+    // Hero button handlers
+    if(playAllBtn){
+      playAllBtn.addEventListener('click', () => {
+        if(songs.length > 0){
+          loadSong(0, true);
+        }
+      });
+    }
+
+    if(shuffleBtnHero){
+      shuffleBtnHero.addEventListener('click', () => {
+        if(songs.length > 0){
+          isShuffleOn = true;
+          toggleShuffle();
+          loadSong(0, true);
+        }
+      });
+    }
+
+    // Load liked songs from localStorage
+    function loadLikedSongs(){
+      const likedSongs = JSON.parse(localStorage.getItem('catifyy_liked_songs') || '[]');
+      const songListContainer = document.querySelector('.song-list');
+      
+      // Update hero text
+      const heroP = document.querySelector('.liked-hero p');
+      if(heroP){
+        heroP.textContent = `All your favorite tracks in one place. ${likedSongs.length} songs you've loved and saved for easy access.`;
+      }
+
+      // Clear existing songs (except filters)
+      const filters = songListContainer.querySelector('.liked-filters');
+      songListContainer.innerHTML = '';
+      if(filters) songListContainer.appendChild(filters);
+
+      // Clear songs array
+      songs = [];
+
+      if(likedSongs.length === 0){
+        songListContainer.innerHTML += `
+          <div style="text-align: center; padding: 60px 20px;">
+            <i class="fa-solid fa-heart-crack" style="font-size: 64px; color: var(--accent); opacity: 0.3; margin-bottom: 20px;"></i>
+            <h2 style="margin: 0 0 10px;">No Liked Songs Yet</h2>
+            <p style="opacity: 0.7; margin: 0 0 20px;">Start liking songs to see them here!</p>
+            <a href="songs.html" class="btn btn-primary">Browse Songs</a>
+          </div>
+        `;
+        return;
+      }
+
+      // Sort by most recently liked
+      likedSongs.sort((a, b) => new Date(b.likedAt) - new Date(a.likedAt));
+
+      // Display liked songs and build songs array
+      likedSongs.forEach((song, index) => {
+        const songItem = document.createElement('div');
+        songItem.className = 'song-item';
+        songItem.dataset.src = song.src || '';
+        
+        songItem.innerHTML = `
+          <div class="song-artwork">
+            <img src="${song.artwork || './images/cat.png'}" alt="${song.title}"/>
+            <button class="song-play-btn">
+              <svg width="10" height="10" viewBox="0 0 24 24"><path fill="currentColor" d="M8 5v14l11-7z"/></svg>
+            </button>
+          </div>
+          <div class="song-info">
+            <div class="song-title">${song.title}</div>
+            <div class="song-artist">${song.artist}</div>
+          </div>
+          <div class="song-album">${song.album || '—'}</div>
+          <div class="song-duration">—</div>
+          <div class="song-actions">
+            <button class="action-btn liked" data-unlike="${index}">
+              <i class="fa-solid fa-heart"></i>
+            </button>
+            <button class="action-btn">
+              <i class="fa-solid fa-ellipsis"></i>
+            </button>
+          </div>
+        `;
+        
+        songListContainer.appendChild(songItem);
+        
+        // Add to songs array
+        songs.push({
+          el: songItem,
+          title: song.title,
+          artist: song.artist,
+          album: song.album || '',
+          artwork: song.artwork || './images/cat.png',
+          src: song.src || null
+        });
+      });
+
+      // Make song items clickable
+      songs.forEach((song, index) => {
+        if(!song.el) return;
+        
+        // Click on song item
+        song.el.addEventListener('click', (e) => {
+          if(e.target.closest('.song-play-btn') || e.target.closest('.action-btn')) return;
+          
+          if(currentIndex === index){
+            togglePlayPause();
+          } else {
+            loadSong(index, true);
+          }
+        });
+
+        // Click on play button
+        const playBtn = song.el.querySelector('.song-play-btn');
+        if(playBtn){
+          playBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            if(currentIndex === index){
+              togglePlayPause();
+            } else {
+              loadSong(index, true);
+            }
+          });
+        }
+      });
+
+      // Add unlike functionality
+      document.querySelectorAll('.action-btn[data-unlike]').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const index = parseInt(btn.dataset.unlike);
+          const song = likedSongs[index];
+          
+          if(confirm(`Remove "${song.title}" from liked songs?`)){
+            likedSongs.splice(index, 1);
+            localStorage.setItem('catifyy_liked_songs', JSON.stringify(likedSongs));
+            loadLikedSongs(); // Reload
+            console.log('❌ Removed from likes');
+          }
+        });
+      });
+
+      // Store original order for shuffle
+      originalOrder = [...songs];
+
+      console.log('❤️ Loaded', likedSongs.length, 'liked songs');
+    }
+
+    // Keyboard shortcuts
+    document.addEventListener('keydown', (e) => {
+      if(e.target.tagName === 'INPUT') return;
+      
+      if(e.code === 'Space'){
+        e.preventDefault();
+        togglePlayPause();
+      } else if(e.code === 'ArrowRight'){
+        nextSong();
+      } else if(e.code === 'ArrowLeft'){
+        prevSong();
+      }
+    });
+
+    // Load on page load
+    loadLikedSongs();
+
+    // Reload when window regains focus (to catch likes from other pages)
+    window.addEventListener('focus', loadLikedSongs);
+  </script>
 </body>
 </html>

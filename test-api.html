@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>API Test</title>
+</head>
+<body>
+  <h1>Music API Test</h1>
+  <button onclick="testSearch()">Test Search: Tum Se Hi</button>
+  <div id="result"></div>
+
+  <script src="music-api.js"></script>
+  <script>
+    async function testSearch(){
+      const resultDiv = document.getElementById('result');
+      resultDiv.innerHTML = 'Searching...';
+      
+      try{
+        const api = new MusicAPI();
+        const result = await api.searchSong('Tum Se Hi', 'Mohit Chauhan');
+        
+        if(result){
+          resultDiv.innerHTML = `
+            <h3>Found!</h3>
+            <p><strong>Title:</strong> ${result.title}</p>
+            <p><strong>Artist:</strong> ${result.artist}</p>
+            <p><strong>Preview URL:</strong> ${result.preview_url}</p>
+            <p><strong>Album Cover:</strong> <img src="${result.album_cover}" width="100"/></p>
+            <audio controls src="${result.preview_url}"></audio>
+          `;
+        } else {
+          resultDiv.innerHTML = '<p style="color:red">No result found</p>';
+        }
+      } catch(e){
+        resultDiv.innerHTML = '<p style="color:red">Error: ' + e.message + '</p>';
+        console.error(e);
+      }
+    }
+  </script>
+</body>
+</html>
