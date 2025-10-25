@@ -922,7 +922,8 @@
         currentSongItem.classList.add('playing');
         const playBtn = currentSongItem.querySelector('.modal-song-play-btn i');
         if(playBtn){
-          playBtn.className = 'fa-solid fa-pause';
+          playBtn.className = 'fa-solid fa-spinner';
+          playBtn.style.animation = 'spin 1s linear infinite';
         }
       }
 
@@ -937,41 +938,74 @@
           const api = new MusicAPI();
           console.log('🔍 Searching via Deezer API:', song.title, '-', song.artist);
           
-          const track = await api.searchSong(song.title, song.artist);
-          if(track && track.preview_url){
-            console.log('✅ Found on Deezer API:', track.preview_url);
-            currentAudio = new Audio(track.preview_url);
-            
-            currentAudio.addEventListener('canplay', () => {
-              console.log('✅ Audio ready to play');
-            });
-            
-            currentAudio.addEventListener('error', (e) => {
-              console.error('❌ Audio error:', e);
-              console.log('⚠️ Trying next song...');
-              setTimeout(() => playNextSongInPlaylist(), 1000);
-            });
-            
-            currentAudio.addEventListener('ended', () => {
-              playNextSongInPlaylist();
-            });
-            
-            try {
-              await currentAudio.play();
-              audioPlayed = true;
-              console.log('✅ Playing via Deezer API');
+          try {
+            const track = await api.searchSong(song.title, song.artist);
+            if(track && track.preview_url){
+              console.log('✅ Found on Deezer API:', track.preview_url);
+              currentAudio = new Audio(track.preview_url);
               
-              // Show pause button when playing
-              document.getElementById('modalPauseBtn').style.display = 'flex';
-              document.getElementById('modalPlayBtn').style.display = 'none';
-            } catch(playError) {
-              console.error('❌ Play error:', playError);
+              currentAudio.addEventListener('canplay', () => {
+                console.log('✅ Audio ready to play');
+              });
+              
+              currentAudio.addEventListener('error', (e) => {
+                console.error('❌ Audio error:', e);
+                console.log('⚠️ Trying next song...');
+                if(currentSongItem) {
+                  const playBtn = currentSongItem.querySelector('.modal-song-play-btn i');
+                  if(playBtn) playBtn.className = 'fa-solid fa-play';
+                }
+                setTimeout(() => playNextSongInPlaylist(), 1000);
+              });
+              
+              currentAudio.addEventListener('ended', () => {
+                playNextSongInPlaylist();
+              });
+              
+              try {
+                await currentAudio.play();
+                audioPlayed = true;
+                console.log('✅ Playing via Deezer API');
+                
+                // Update button to pause icon
+                if(currentSongItem) {
+                  const playBtn = currentSongItem.querySelector('.modal-song-play-btn i');
+                  if(playBtn) {
+                    playBtn.className = 'fa-solid fa-pause';
+                    playBtn.style.animation = 'none';
+                  }
+                }
+                
+                // Show pause button when playing
+                document.getElementById('modalPauseBtn').style.display = 'flex';
+                document.getElementById('modalPlayBtn').style.display = 'none';
+              } catch(playError) {
+                console.error('❌ Play error:', playError);
+                if(currentSongItem) {
+                  const playBtn = currentSongItem.querySelector('.modal-song-play-btn i');
+                  if(playBtn) playBtn.className = 'fa-solid fa-play';
+                }
+              }
+            } else {
+              console.log('⚠️ Not found on Deezer API');
+              if(currentSongItem) {
+                const playBtn = currentSongItem.querySelector('.modal-song-play-btn i');
+                if(playBtn) playBtn.className = 'fa-solid fa-play';
+              }
             }
-          } else {
-            console.log('⚠️ Not found on Deezer API');
+          } catch(apiError) {
+            console.error('❌ API error:', apiError);
+            if(currentSongItem) {
+              const playBtn = currentSongItem.querySelector('.modal-song-play-btn i');
+              if(playBtn) playBtn.className = 'fa-solid fa-play';
+            }
           }
         } else {
           console.log('⚠️ MusicAPI not loaded');
+          if(currentSongItem) {
+            const playBtn = currentSongItem.querySelector('.modal-song-play-btn i');
+            if(playBtn) playBtn.className = 'fa-solid fa-play';
+          }
         }
 
         // Fallback to local file if API failed
@@ -1005,6 +1039,15 @@
               audioPlayed = true;
               console.log('✅ Playing local file:', audioSrc);
               
+              // Update button to pause icon
+              if(currentSongItem) {
+                const playBtn = currentSongItem.querySelector('.modal-song-play-btn i');
+                if(playBtn) {
+                  playBtn.className = 'fa-solid fa-pause';
+                  playBtn.style.animation = 'none';
+                }
+              }
+              
               // Show pause button when playing
               document.getElementById('modalPauseBtn').style.display = 'flex';
               document.getElementById('modalPlayBtn').style.display = 'none';
@@ -1016,16 +1059,21 @@
           }
         }
 
-        // If still not playing, show error and try next
+        // If still not playing, show error
         if(!audioPlayed){
           console.error('❌ Could not play song:', song.title);
-          alert(`Could not play "${song.title}". The song may not be available. Trying next song...`);
-          setTimeout(() => playNextSongInPlaylist(), 1500);
+          if(currentSongItem) {
+            const playBtn = currentSongItem.querySelector('.modal-song-play-btn i');
+            if(playBtn) playBtn.className = 'fa-solid fa-play';
+          }
         }
         
       } catch(error){
         console.error('❌ Error playing song:', error);
-        setTimeout(() => playNextSongInPlaylist(), 1000);
+        if(currentSongItem) {
+          const playBtn = currentSongItem.querySelector('.modal-song-play-btn i');
+          if(playBtn) playBtn.className = 'fa-solid fa-play';
+        }
       }
     }
 
@@ -1407,6 +1455,15 @@
       to{
         transform: translateY(0);
         opacity: 1;
+      }
+    }
+
+    @keyframes spin {
+      from {
+        transform: rotate(0deg);
+      }
+      to {
+        transform: rotate(360deg);
       }
     }
 
