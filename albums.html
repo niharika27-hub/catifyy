@@ -1206,7 +1206,9 @@
       currentSongIndex = index;
       const song = currentSongs[index];
       
-      console.log('🎵 Playing:', song.title, 'by', song.artist);
+      console.log('🎵 Playing song #' + (index+1) + ':', song.title, 'by', song.artist);
+      console.log('📂 Album:', currentAlbum);
+      console.log('🔢 Total songs in album:', currentSongs.length);
       
       // Update UI
       playerArtwork.src = song.artwork;
@@ -1232,6 +1234,8 @@
           console.log('🔍 Searching via API:', song.title, '-', song.artist);
           
           const track = await api.searchSong(song.title, song.artist);
+          console.log('📦 API response:', track);
+          
           if(track && track.preview_url){
             console.log('✅ Found on API:', track.preview_url);
             currentAudio = new Audio(track.preview_url);
@@ -1247,15 +1251,18 @@
             });
             
             currentAudio.addEventListener('ended', () => {
+              console.log('⏹️ Song ended, playing next...');
               playNext();
             });
             
-            currentAudio.addEventListener('error', () => {
-              console.log('❌ Audio error, trying next song');
+            currentAudio.addEventListener('error', (err) => {
+              console.log('❌ Audio error:', err);
+              console.log('⚠️ Trying next song');
               setTimeout(() => playNext(), 500);
             });
             
             try {
+              console.log('▶️ Attempting to play audio...');
               await currentAudio.play();
               audioPlayed = true;
               
@@ -1263,33 +1270,31 @@
               playIcon.style.display = 'none';
               pauseIcon.style.display = 'block';
               
-              console.log('✅ Playing via API');
+              console.log('✅ NOW PLAYING via API');
             } catch(playError) {
-              console.log('❌ Could not play audio:', playError);
+              console.error('❌ Play error:', playError.message);
               audioPlayed = false;
             }
           } else {
-            console.log('⚠️ No preview URL found for:', song.title);
+            console.log('⚠️ No preview URL found');
           }
         } else {
           console.log('⚠️ MusicAPI not loaded');
         }
         
         if(!audioPlayed){
-          console.log('⚠️ Skipping to next song');
+          console.log('⚠️ Audio not played, skipping to next');
           setTimeout(() => {
-            // Only try next song if there are more songs
             if(currentSongIndex < currentSongs.length - 1){
               playNext();
             } else {
-              console.log('⚠️ No more songs in album');
+              console.log('⚠️ Reached end of album');
             }
           }, 500);
         }
         
       } catch(error){
         console.error('❌ Error playing song:', error);
-        // Try next song after delay
         setTimeout(() => {
           if(currentSongIndex < currentSongs.length - 1){
             playNext();
